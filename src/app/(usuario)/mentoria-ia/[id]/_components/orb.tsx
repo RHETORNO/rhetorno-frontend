@@ -1,6 +1,6 @@
 "use client"
 
-import { Orb, type OrbState } from "@/components/bots/orb/Orb"
+import { Orb, type OrbState } from "@/components/bots/orb"  
 import React, { useState } from "react"
 
 const states: { value: OrbState; label: string }[] = [
