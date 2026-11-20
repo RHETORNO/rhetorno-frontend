@@ -49,6 +49,13 @@
   --radius-4xl: calc(var(--radius) * 2.6);
   --animate-marquee: marquee var(--duration) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  /* adicionar vars para a orb rs */
+  --color-sala-noite: #0B1B3A;
+  --color-sala-superficie: #133264A;
+  --color-sala-linha: #2A4170;
+  --color-sala-texto: #E8EEF9;
+  --color-orbe: #9fe8ff;
+  --color-sinal: #ffb547;
   @keyframes marquee {
   from {
     transform: translateX(0);

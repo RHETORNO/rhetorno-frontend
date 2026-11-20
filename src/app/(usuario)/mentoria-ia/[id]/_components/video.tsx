@@ -1,30 +1,65 @@
 "use client"
 
-import useVisionTracker from "@/hooks/useVisionTracker"
-import React, { useRef, useEffect, useState } from "react"
+import type { RefObject } from "react"
+import type { VisionResult, VisionStatus } from "@/hooks/useVisionTracker"
+import Overlay from "./overlay"
 
+type Props = {
+  videoRef: RefObject<HTMLVideoElement | null>
+  visao: RefObject<VisionResult>
+  status: VisionStatus
+  fps: number
+  camLigada: boolean
+}
 
-const Video = () => {
+const Video = ({ videoRef, visao, status, fps, camLigada }: Props) => {
+  return (
+    <figure className="relative aspect-4/3 max-h-full w-full self-center overflow-hidden rounded-2xl">
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        className={`absolute inset-0 h-full w-full -scale-x-100 object-cover transition-opacity duration-300 ${camLigada ? "opacity-100" : "opacity-0"}`}
+      />
 
-    const { videoRef, status, fps} = useVisionTracker()
+      {camLigada && <Overlay videoRef={videoRef} visao={visao} />}
 
-    return (
-        <>
-        <div className="relative w-full mx-auto max-w-2xl">
-            <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="block w-full "
-            />
-            <div className="absolute left-2 top-2 rounded-md bg-black/60 px-2 py-1 font-mono text-xs text-white">
-            {status} e {fps} fps
+    
 
-            </div>
+      {status === "loading" && (
+        <div className="absolute inset-0 grid place-items-center px-8 text-center text-sm text-sala-texto/70">
+          Ligando a câmera e os modelos de IA...
         </div>
-        </>
-    )
+      )}
+      {status === "error" && (
+        <p className="absolute inset-0 grid place-items-center px-8 text-sm text-sala-texto">
+          Não conseguimos acessar sua câmera. Libere o acesso no cadeado da barra de endereço e recarregue a página.
+      </p>
+      )}
+      {status === "ready" && !camLigada && (
+        <p className="absolute inset-0 grid place-items-center px-8 text-sm text-[#C5D3E9] dark:text-sala-texto">
+          Câmera desligada
+        </p>
+      )}
+
+      <figcaption className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-4 text-sm">
+        <span className="font-medium text-[#C5D3E9] dark:text-sala-texto"> Você </span>
+
+        {status === "ready" && camLigada && (
+          <span className="flex items-center gap-2 text-sinal"> 
+            <span
+              aria-hidden>
+            {/* pa aparecer so para devs */}
+              {process.env.NODE_ENV === "development" && ( 
+                <span className="tabular-nums text-sala-texto/50"> {fps} Hz </span>
+              )}
+            </span>
+          </span>
+        )}
+      </figcaption>
+    </figure>
+  )
 }
 
 export default Video
