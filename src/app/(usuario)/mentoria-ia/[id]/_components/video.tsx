@@ -1,16 +1,18 @@
 "use client"
 
 import type { RefObject } from "react"
-import type { VisionStatus } from "@/hooks/useVisionTracker"
+import type { VisionResult, VisionStatus } from "@/hooks/useVisionTracker"
+import Overlay from "./overlay"
 
 type Props = {
   videoRef: RefObject<HTMLVideoElement | null>
+  visao: RefObject<VisionResult>
   status: VisionStatus
   fps: number
   camLigada: boolean
 }
 
-const Video = ({ videoRef, status, fps, camLigada }: Props) => {
+const Video = ({ videoRef, visao, status, fps, camLigada }: Props) => {
   return (
     <figure className="relative aspect-4/3 max-h-full w-full self-center overflow-hidden rounded-2xl">
       <video
@@ -20,6 +22,8 @@ const Video = ({ videoRef, status, fps, camLigada }: Props) => {
         muted
         className={`absolute inset-0 h-full w-full -scale-x-100 object-cover transition-opacity duration-300 ${camLigada ? "opacity-100" : "opacity-0"}`}
       />
+
+      {camLigada && <Overlay videoRef={videoRef} visao={visao} />}
 
     
 

@@ -69,7 +69,7 @@ const Sala = () => {
           visao={resultRef}
           nivelAudio={micLigado ? getAudioLevel : () => 0}
         />
-        <Video videoRef={videoRef} status={status} fps={fps} camLigada={camLigada} />
+        <Video videoRef={videoRef} visao={resultRef} status={status} fps={fps} camLigada={camLigada} />
       </section>
 
       <div className="flex flex-col items-center gap-6 md:gap-8">
