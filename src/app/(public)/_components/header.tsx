@@ -14,6 +14,7 @@ import {
 import Botao from "@/components/layout/button"
 import { ModeToggle } from "@/components/toggleModo"
 import Entrar from "./menu-entrar"
+import { usePathname } from "next/navigation"
 
 const linkClass =
     "relative text-[17px] hover:cursor-pointer after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-foreground after:transition-all after:duration-[600ms] hover:after:w-full"
@@ -21,19 +22,21 @@ const linkClass =
 
 const Header = () => {
 
+    const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false) // teoricamente irei fazer icar true com 50px
-
+    
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY >= 400)
 
         onScroll() // cobre o caso de recarregar a pagina ja rolada/scroladars
         window.addEventListener("scroll", onScroll, { passive: true}) // aqui deixa true
         return () => window.removeEventListener("scroll", onScroll)
-    }, [])
+    }, [pathname])
 
+    const showBackground = scrolled || pathname === "/como-funciona";
     return (
         <header className={`fixed inset-x-0 top-0 z-50 py-1.5 transition-all duration-300 ${
-            scrolled
+            showBackground
             ? "bg-background/70 shadow-sm backdrop-blur-md"
             : "bg-transparent"
         }`}>
@@ -47,14 +50,14 @@ const Header = () => {
                     width={52}
                     height={52}
                     className={`brightness-0 dark:invert ${
-                        scrolled
+                        showBackground
                         ? "brightness-0"
                         : "invert"
                     }`}
                     // irei fazer gambiarra nesse classname
                      />
                     <p className={`font-normal font-titulo text-[22px] ${
-                        scrolled
+                        showBackground
                         ? "text-foreground"
                         : "text-white/90"
                     }`}>RHETORNO</p>
