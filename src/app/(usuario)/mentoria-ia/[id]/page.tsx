@@ -1,12 +1,14 @@
-// vou colocar aqui pra renderizar so sala rsrs por causa da page ook rs
-import Sala from "./_components/sala"
+import Screen from "./_components/orb"
+import Video from "./_components/video"
 
 const Page = () => {
-  return (
-    <>
-      <Sala />
-    </>
-  )
+
+    return (
+    <main>
+        <Video />
+        <Screen />
+     </main>
+    )
 }
 
 export default Page

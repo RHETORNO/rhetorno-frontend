@@ -15,9 +15,6 @@ export type OrbProps = {
    *  (ex.: um AnalyserNode) para não re-renderizar o React. Sem essa prop, a
    *  Orb simula um envelope de fala nos estados `listening` e `speaking`. */
   audioLevel?: number | (() => number);
-  /** para onde a Orb olha, de -1 a 1 (ex.: o rosto da pessoa na câmera).
-   *  Lida a cada quadro, sem re-renderizar. `null` volta a seguir o cursor. */
-  gaze?: () => { x: number; y: number } | null;
   /** `false` faz a animação de saída; `true`, a de entrada */
   active?: boolean;
   /** a Orb inclina de leve em direção ao cursor (ignorado em telas de toque
@@ -52,10 +49,9 @@ type StageProps = {
   reducedMotion: boolean;
   pointer: RefObject<{ x: number; y: number }>;
   onSlow: () => void;
-  gaze: OrbProps["gaze"];
 };
 
-function OrbStage({ state, audioLevel, active, tier, reducedMotion, pointer, onSlow, gaze }: StageProps) {
+function OrbStage({ state, audioLevel, active, tier, reducedMotion, pointer, onSlow }: StageProps) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const camera = useThree((s) => s.camera);
@@ -66,11 +62,11 @@ function OrbStage({ state, audioLevel, active, tier, reducedMotion, pointer, onS
 
   const rigRef = useRef<OrbRig | null>(null);
   const motionRef = useRef<OrbMotion | null>(null);
-  const latest = useRef({ state, audioLevel, active, onSlow, gaze });
+  const latest = useRef({ state, audioLevel, active, onSlow });
   const perf = useRef({ frames: 0, time: 0, drops: 0 });
 
   useEffect(() => {
-    latest.current = { state, audioLevel, active, onSlow, gaze };
+    latest.current = { state, audioLevel, active, onSlow };
   });
 
   useEffect(() => {
@@ -102,10 +98,7 @@ function OrbStage({ state, audioLevel, active, tier, reducedMotion, pointer, onS
     motion.setState(now.state);
     motion.setActive(now.active);
     const level = typeof now.audioLevel === "function" ? now.audioLevel() : now.audioLevel;
-    const look = reducedMotion ? null : now.gaze?.();
-    const px = look ? look.x : pointer.current.x;
-    const py = look ? look.y : pointer.current.y;
-    rig.update(motion.tick(delta, level, px, py));
+    rig.update(motion.tick(delta, level, pointer.current.x, pointer.current.y));
     rig.render(delta);
 
     // Abaixo de ~40 fps, reduz passos e resolução (no máximo duas vezes).
@@ -138,7 +131,6 @@ function OrbStage({ state, audioLevel, active, tier, reducedMotion, pointer, onS
 export function Orb({
   state = "idle",
   audioLevel,
-  gaze,
   active = true,
   interactive = true,
   quality = "auto",
@@ -204,7 +196,6 @@ export function Orb({
           tier={tier}
           reducedMotion={environment.reducedMotion}
           pointer={pointer}
-          gaze={gaze}
           onSlow={() => setDprScale((scale) => Math.max(0.6, scale * 0.8))}
         />
       </Canvas>

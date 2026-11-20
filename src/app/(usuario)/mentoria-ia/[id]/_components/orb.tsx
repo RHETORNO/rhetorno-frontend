@@ -1,54 +1,50 @@
 "use client"
 
-import type { RefObject } from "react"
-import { Orb, type OrbState } from "@/components/bots/orb"
-import type { VisionResult } from "@/hooks/useVisionTracker"
+import { Orb, type OrbState } from "@/components/bots/orb/Orb"
+import React, { useState } from "react"
 
-const rotulos: Record<OrbState, string> = {
-  idle: 'Aguardando',
-  listening: 'Escutando você',
-  thinking: 'Analisando',
-  speaking: 'Falando'
-}
+const states: { value: OrbState; label: string }[] = [
+  { value: "idle", label: "Repouso" },
+  { value: "listening", label: "Escutando" },
+  { value: "thinking", label: "Processando" },
+  { value: "speaking", label: "Respondendo" },
+];
 
-const gaze_ganho = 1.6
-const gaze_vies_x = 0.5
+const Screen = () => {
 
-const limitar = (v: number) => Math.max(-1, Math.min(1, v))
+    const [state, setState] = useState<OrbState>("idle");
+    const [active, setActive] = useState(true);
+    const [manualAudio, setManualAudio] = useState(false);
+    const [level, setLevel] = useState(0.5);
 
-type Props = {
-  state: OrbState
-  visao: RefObject<VisionResult>
-  nivelAudio: () => number
-}
-
-const PainelOrb = ({ state, visao, nivelAudio }: Props) => {
-  const olharDoRosto = () => {
-    const nariz = visao.current.face?.faceLandmarks[0]?.[1]
-    if (!nariz) return null
-    return {
-      x: limitar((0.5 - nariz.x) * 2 * gaze_ganho + gaze_vies_x),
-      y: limitar((nariz.y - 0.5) * 2 * gaze_ganho),
-    }
-  }
-
-  return (
-    <div className="flex min-h-0 flex-col items-center gap-4">
+    return (
+    <section
+      className={"flex min-h-screen flex-col items-center justify-center gap-8 py-24"}
+    >
       <Orb
         state={state}
-        active
-        gaze={olharDoRosto}
-        audioLevel={state === "listening" ? nivelAudio : undefined}
-        className="w-[min(280px,65%)] md:w-[min(440px,85%)]"
+        active={active}
+        audioLevel={manualAudio ? level : undefined}
+        className="w-[min(560px,90vw)]"
       />
-      <p
-        aria-live="polite"
-        className="text-sm text-[#42BFE8]/60 dark:text-orbe"
-      >
-        {rotulos[state]}
-      </p>
-    </div>
-  )
+
+        <div className="flex flex-wrap justify-center gap-2">
+        {states.map((s) => (
+          <button
+            key={s.value}
+            type="button"
+            onClick={() => setState(s.value)}
+            aria-pressed={state === s.value}
+            className="rounded-full border border-current/20 px-4 py-2 text-sm transition-colors hover:border-current/50 aria-pressed:border-sky-300 aria-pressed:bg-sky-300/10 aria-pressed:text-sky-100"
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+
+        </section>
+    )
 }
 
-export default PainelOrb
+export default Screen
