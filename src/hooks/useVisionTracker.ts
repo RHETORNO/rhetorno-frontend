@@ -25,6 +25,8 @@ export type VisionResult = {
 const useVisionTracker = () => {
     const videoRef = useRef<HTMLVideoElement>(null)
     const resultRef = useRef<VisionResult>({ face: null, pose: null, gesture: null })
+  const audioRef = useRef<{ analyser: AnalyserNode; dados: Float32Array<ArrayBuffer> } | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
     const [status, setStatus] = useState<VisionStatus>('loading')
     const [fps, setFps] = useState<number>(0)
 
@@ -32,6 +34,7 @@ const useVisionTracker = () => {
         let cancelado = false
         let rafId = 0
         let stream: MediaStream | null = null
+        let audioCtx: AudioContext | null = null
 
         let busy = false
         let lastSent = 0
@@ -95,7 +98,21 @@ const useVisionTracker = () => {
                     media.getTracks().forEach((track) => track.stop())
                     return
                 }
-                stream = media
+              stream = media
+              streamRef.current = media
+
+                if (media.getAudioTracks().length > 0) {
+                    const ctx = new AudioContext()
+                    const analyser = ctx.createAnalyser()
+                    analyser.fftSize = 512
+                    ctx.createMediaStreamSource(media).connect(analyser)
+                    audioRef.current = { analyser, dados: new Float32Array(analyser.fftSize) }
+                    audioCtx = ctx
+                    ctx.resume()
+                    if (ctx.state === "suspended") {
+                        window.addEventListener("pointerdown", () => ctx.resume(), { once: true })
+                    }
+                }
 
                 const video = videoRef.current
                 if (!video) return
@@ -152,11 +169,30 @@ const useVisionTracker = () => {
         cancelado = true
         cancelAnimationFrame(rafId)
         stream?.getTracks().forEach((t) => t.stop())
+        audioCtx?.close()
+      audioRef.current = null
+      streamRef.current = null
         worker.terminate() // mata o worker e libera a porra toda junta
         }
     }, [])
 
-    return { videoRef, resultRef, status, fps }
+    const getAudioLevel = () => {
+        const audio = audioRef.current
+        if (!audio) return 0
+        audio.analyser.getFloatTimeDomainData(audio.dados)
+        let soma = 0
+        for (const v of audio.dados) soma += v * v
+        const volume = Math.sqrt(soma / audio.dados.length)
+        return Math.max(0, Math.min(1, (volume - 0.01) * 6))
+  }
+
+  const setMicrofone = (ligado: boolean) =>
+    streamRef.current?.getAudioTracks().forEach((t) => { t.enabled = ligado })
+
+  const setCamera = (ligada: boolean) => 
+    streamRef.current?.getVideoTracks().forEach((t) => { t.enabled = ligada})
+
+    return { videoRef, resultRef, status, fps, getAudioLevel, setCamera, setMicrofone }
 }
 
 export default useVisionTracker
