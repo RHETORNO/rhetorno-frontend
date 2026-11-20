@@ -56,7 +56,7 @@ export function Sidebar({ perfil, children }: { perfil: ReactNode; children: Rea
       <SidebarInset className="bg-background">
         <header className="flex items-center gap-2 p-4 m-6 md:hidden">
           <SidebarTrigger />
-          <span className="font-semibold">VitrineRH</span>
+          <p> Rhetorno </p>
         </header>
         <div className="flex-1 px-4 py-6 md:px-10 md:py-9">{children}</div>
       </SidebarInset>
@@ -97,11 +97,11 @@ function AppSidebar({ perfil }: { perfil: ReactNode }) {
           isCollapsed ? "flex-col items-center gap-4" : "flex-row items-center justify-between"
         )}
       >
-        <Link href="/home" className="flex items-center gap-3">
-          <Image width={20} height={20} src="/logo.png" alt="VitrineRH Logo" />
+        <Link href="/home" className="flex items-center gap-2">
+          <Image width={40} height={40} src="/images/logo.svg" alt="rhetorno Logo" />
           {!isCollapsed && (
             <div>
-              <h1 className="font-bold text-gray-900 text-lg leading-tight dark:text-foreground">VitrineRH</h1>
+              <h1 className="font-medium font-titulo text-gray-900 text-[16px] leading-tight dark:text-foreground">RHETORNO</h1>
               <p className="text-xs text-gray-500 dark:text-muted-foreground">Área do candidato</p>
             </div>
           )}
@@ -144,7 +144,7 @@ function AppSidebar({ perfil }: { perfil: ReactNode }) {
         {perfil}
         <hr className="border-gray-200 mb-2 dark:border-sidebar-border" />
         <div className="text-[11px] text-gray-400 space-y-1 px-2 dark:text-muted-foreground">
-          <p className="pt-2 text-xs">VitrineRH 2026 © Todos os direitos reservados</p>
+          <p className="pt-2 text-xs">RHETORNO 2026 © Todos os direitos reservados</p>
         </div>
       </SidebarFooter>
     </SidebarRoot>

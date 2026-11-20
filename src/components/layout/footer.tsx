@@ -44,7 +44,7 @@ const colunas: Coluna[] = [
         titulo: "CONTATO",
         largura: "w-[197px]",
         itens: [
-            { texto: "contato@vitrineRH.com", href: "mailto:contato@vitrineRH.com" },
+            { texto: "contato@RHETORNO.com", href: "mailto:contato@RHETORNO.com" },
         ],
     },
 ]
@@ -57,7 +57,7 @@ export default function Footer() {
 
                 <div className="flex w-[183px] flex-col gap-[30px]">
                     <div className="flex flex-col gap-[9px]">
-                        <p className="text-foreground ">VitrineRH</p>
+                        <p className="text-foreground font-titulo">RHETORNO</p>
                         <p>Seu caminho para um futuro melhor.</p>
                     </div>
 
@@ -97,7 +97,7 @@ export default function Footer() {
             </div>
                         
                 <p className="text-[#64748b]">
-                    © 2026 VitrineRH. Todos os direitos reservados.
+                    © 2026 RHETORNO. Todos os direitos reservados.
                 </p>
         </footer>
     )

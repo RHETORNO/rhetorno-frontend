@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Stardust from "./Sturdust";
 
-const REPOSITORIO_URL = "https://github.com/VitrineRH";
+const REPOSITORIO_URL = "https://github.com/RHETORNO";
 
 export default function ProjetoELinks() {
     return (
@@ -17,7 +17,7 @@ export default function ProjetoELinks() {
                         </h2>
                     </div>
                     <p className="text-base leading-[1.6] text-muted-foreground md:w-[460px] md:text-lg">
-                        Acompanhe como o VitrineRH foi construído e as pessoas que estão por trás de cada decisão.
+                        Acompanhe como o RHETORNO foi construído e as pessoas que estão por trás de cada decisão.
                     </p>
                 </div>
                 <div className="relative flex w-full flex-col gap-10 overflow-hidden rounded-[20px] bg-black p-8 md:w-[475px]">
@@ -28,7 +28,7 @@ export default function ProjetoELinks() {
                             <Image src="/icons/github.svg" alt="" width={22} height={22} />
                         </div>
                         <span className="text-[13px] leading-[1.4] text-white/55">
-                            github.com/VitrineRH
+                            github.com/RHETORNO
                         </span>
                     </div>
                     <div className="flex flex-col gap-2.5">
@@ -36,7 +36,7 @@ export default function ProjetoELinks() {
                             Repositório do projeto
                         </h3>
                         <p className="leading-[1.6] text-white/65">
-                            Todo o código do VitrineRH em um só lugar: front-end, back-end, histórico de versões e como contribuir.
+                            Todo o código do RHETORNO em um só lugar: front-end, back-end, histórico de versões e como contribuir.
                         </p>
                     </div>
 
