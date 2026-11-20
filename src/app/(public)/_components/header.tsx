@@ -40,12 +40,12 @@ const Header = () => {
             <nav className="mx-auto justify-between items-center flex h-20 px-6 "
             aria-label="Principal">
                 <Link href="/">
-                <div className="text-2xl text-foreground flex items-center">
+                <div className="text-2xl text-foreground flex gap-2 items-center">
                     <Image
                     src={"/images/logo.svg"}
                     alt=""
-                    width={70}
-                    height={70}
+                    width={52}
+                    height={52}
                     className={`brightness-0 dark:invert ${
                         scrolled
                         ? "brightness-0"
@@ -53,11 +53,11 @@ const Header = () => {
                     }`}
                     // irei fazer gambiarra nesse classname
                      />
-                    <p className={`font-normal ${
+                    <p className={`font-normal font-titulo text-[22px] ${
                         scrolled
                         ? "text-foreground"
                         : "text-white/90"
-                    }`}>Vitrine<span className="font-bold">RH</span></p>
+                    }`}>RHETORNO</p>
                 </div>
                 </Link>
 

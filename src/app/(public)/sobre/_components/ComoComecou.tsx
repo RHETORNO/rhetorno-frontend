@@ -20,7 +20,7 @@ export default function ComoComecou() {
                     <div className="flex flex-col gap-2 leading-[1.64] text-muted-foreground md:text-lg md:text-justify">
                         <p>
                             Criado em setembro de 2026, a partir de um projeto do Instituto
-                            PROA, o VitrineRH nasceu da iniciativa de oito integrantes com um
+                            PROA, o RHETORNO nasceu da iniciativa de oito integrantes com um
                             propósito em comum,
                             <strong> tornar a preparação profissional mais acessível e direcionada.</strong>
                         </p>             

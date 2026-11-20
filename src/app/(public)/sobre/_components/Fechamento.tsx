@@ -19,7 +19,7 @@ export default function Fechamento() {
                     Acreditamos que toda pessoa merece clareza para reconhecer seu potencial, desenvolver suas habilidades e traçar os próximos passos para sua carreira.
                 </p>
                 <p className="max-w-[640px] text-base leading-[1.6] text-white/65 md:text-[19px]">
-                    VitrineRH. Sua próxima oportunidade começa com o que você aprende hoje!
+                    RHETORNO. Sua próxima oportunidade começa com o que você aprende hoje!
                 </p>
             </div>
         </section>

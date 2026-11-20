@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Epilogue } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import Footer from "@/components/layout/footer";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -18,8 +18,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const epilogue = Epilogue({
+  variable: "--font-epilogue",
+  subsets: ["latin"],
+})
+
 export const metadata: Metadata = {
-  title: "VitrineRH",
+  title: "RHETORNO",
   description: "Prepare-se para o mercado de trabalho com análise de currículo, compatibilidade com vagas, simulação de entrevistas com IA, cursos e mentoria de profissionais de RH.",
 };
 
@@ -28,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="pt-br"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased scrollbar-none [&::-webkit-scrollbar]:hidden`}
+      className={`${geistSans.variable} ${geistMono.variable} ${epilogue.variable} h-full antialiased scrollbar-none [&::-webkit-scrollbar]:hidden`}
     >
       <body suppressHydrationWarning className="flex min-h-screen">
         <ThemeProvider

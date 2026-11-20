@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VitrineRH",
-  description: "Acesse sua conta na VitrineRH.",
+  title: "RHETORNO",
+  description: "Acesse sua conta na RHETORNO.",
 };
 
 export default function AuthLayout({

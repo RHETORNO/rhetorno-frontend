@@ -7,7 +7,7 @@ export default function AssimNasceu() {
                 </h2>
                 <div className="flex flex-col gap-2 text-base leading-[1.65] text-muted-foreground md:text-lg md:text-justify">
                     <p>
-                        Diante dessa realidade, desenvolvemos o VitrineRH, uma plataforma que transforma a preparação em um caminho para novas oportunidades.
+                        Diante dessa realidade, desenvolvemos o RHETORNO, uma plataforma que transforma a preparação em um caminho para novas oportunidades.
                     </p>
                     <p>
                         Oferecemos análise de currículo, compatibilidade entre perfis e vagas, preparação para entrevistas com inteligência artificial e acesso a cursos para o desenvolvimento profissional. Também contamos com um hub de recrutadores, no qual os candidatos podem escolher profissionais de RH de acordo com suas necessidades e condições financeiras.

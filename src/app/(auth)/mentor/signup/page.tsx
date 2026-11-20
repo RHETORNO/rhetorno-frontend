@@ -14,8 +14,7 @@ export default function SolicitacaoMentorPage() {
       className={`${display.variable} relative z-10 flex min-h-svh flex-col items-center justify-center gap-8 p-6 md:p-10`}
     >
       <span className="font-(family-name:--font-display) text-3xl tracking-tight">
-        <span className="font-normal">Vitrine</span>
-        <span className="font-bold">RH</span>
+        <span className="font-normal font-titulo"> RHETORNO </span>
       </span>
 
       <SolicitacaoMentor />
