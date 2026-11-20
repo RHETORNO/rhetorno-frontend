@@ -15,7 +15,7 @@ export default function Calendario() {
   const [mesAtual, setMesAtual] = useState(
     new Date(hoje.getFullYear(), hoje.getMonth(), 1)
   );
-  const [diaSelecionado, setDiaSelecionado] = useState(hoje); //Bem legal faz começar hoje, já abre com a data que a pessoa se encontra.
+  const [diaSelecionado, setDiaSelecionado] = useState(hoje); //Começa com o dia de hoje selecionado.
   const [direcao, setDirecao] = useState<"anterior" | "proximo">("proximo");
 
   const ano = mesAtual.getFullYear();
@@ -51,7 +51,7 @@ export default function Calendario() {
 
   const hojeEstaSelecionado = mesmoDia(diaSelecionado, hoje);
   const hojeEstaNaTela =
-    ano === hoje.getFullYear() && mes === hoje.getMonth();// aqui que (voltar) o botão para hoje aparece, e bem legal.
+    ano === hoje.getFullYear() && mes === hoje.getMonth();//Usado para mostrar o botão "Voltar para hoje.
 
   function mudarMes(passo: number) {
     setDirecao(passo < 0 ? "anterior" : "proximo");
