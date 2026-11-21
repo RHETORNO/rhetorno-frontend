@@ -9,16 +9,9 @@ import Video from "./video"
 import Controles from "./controles"
 import { SplitText } from "@/components/ui/split-text"
 import useEntrevista from "@/hooks/useEntrevista"
+import Legendas from "./legenda"
 
 const estadosTeste: OrbState[] = ['idle', 'listening', 'thinking', 'speaking']
-
-  const perguntas = [
-    "Conte um pouco sobre você e sua trajetória até aqui.",
-    "Me conte sobre um desafio técnico que você resolveu e do que se orgulha.",
-    "Como você lida quando discorda de alguém do time?",
-    "Fale de um erro que você cometeu e o que aprendeu com ele.",
-    "Por que você quer trabalhar com a gente?"
-  ]
 
 const formatarTempo = (s: number) => 
   `${String(Math.floor(s / 60)).padStart(2, "0")} : ${String(s % 60).padStart(2, "0")}`
@@ -27,7 +20,6 @@ const formatarTempo = (s: number) =>
 const Sala = () => {
   const router = useRouter()
   const [orbState, setOrbState] = useState<OrbState>('idle')
-  const [indice, setIndice] = useState(0)
   const [micLigado, setMicLigado] = useState(true)
   const [camLigada, setCamLigada] = useState(true)
   const [segundos, setSegundos] = useState(0)
@@ -67,7 +59,6 @@ const Sala = () => {
       <header className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-5">
           <span className="text-[#8CA9D2] dark:text-sala-texto/60">
-            Pergunta {indice + 1} de {perguntas.length}
           </span>
         </div>
         <time
@@ -88,7 +79,10 @@ const Sala = () => {
 
       <div className="flex flex-col items-center gap-6 md:gap-8">
         <h1 className="max-w-3xl text-balance text-center text-xl font-light leading-snug tracking-tight text-[#2B7FA8] dark:text-sala-texto md:text-3xl">
-          <SplitText key={perguntas[indice]} text={perguntas[indice]} by="word" immediate stagger={0.06} duration={0.7} />
+          {entrevista.status === "conectada"
+            ? <Legendas texto={entrevista.fala} progresso={entrevista.getProgresso} />
+            : <SplitText text="Quando estiver pronto, comece a entrevista." by="word" immediate stagger={0.06} duration={0.7} />
+          }
         </h1>
 
         <Controles
@@ -120,7 +114,6 @@ const Sala = () => {
           ))}
           <button
             type="button"
-            onClick={() => setIndice((i) => (i + 1) % perguntas.length)}
             className="rounded-full border border-sala-linha px-3 py-1 text-[#8CA9D2] dark:text-sala-texto/60">
             Próxima pergunta
           </button>

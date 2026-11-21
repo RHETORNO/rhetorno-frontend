@@ -5,7 +5,6 @@ import {
   useRef,
   useState
 } from "react"
-import { bool } from "three/src/nodes/tsl/TSLCore.js"
 
 const recurso = "rhetorno-mentoria-resource"
 const projeto = "rhetorno-mentoria"
@@ -37,6 +36,9 @@ const useEntrevista = () => {
   const analisadorRef = useRef<{ analyser: AnalyserNode; dados: Float32Array<ArrayBuffer> } | null>(null)
   const fontesRef = useRef(new Set<AudioBufferSourceNode>())
   const proximoRef = useRef(0)
+  const inicioFalaRef = useRef<number | null>(null)
+  const duracaoFalaRef = useRef(0)
+  const [fala, setFala] = useState("")
   const [status, setStatus] = useState<StatusEntrevista>("parada")
   const [falando, setFalando] = useState(false)
 
@@ -53,8 +55,10 @@ const useEntrevista = () => {
     fonte.buffer = buffer
     fonte.connect(analisador.analyser)
     proximoRef.current = Math.max(proximoRef.current, ctx.currentTime)
+    if (inicioFalaRef.current === null) inicioFalaRef.current = proximoRef.current
     fonte.start(proximoRef.current)
     proximoRef.current += buffer.duration
+    duracaoFalaRef.current += buffer.duration
 
     fontesRef.current.add(fonte)
     fonte.onended = () => {
@@ -84,6 +88,7 @@ const useEntrevista = () => {
     fontesRef.current.clear()
     setFalando(false)
     setStatus("parada")
+    setFala("")
   }
 
   const iniciar = async () => {
@@ -137,8 +142,14 @@ const useEntrevista = () => {
       ws.onmessage = (e) => {
         const m = JSON.parse(e.data)
         if (m.type === "response.output_audio.delta") tocar(m.delta)
+        else if (m.type === "response.created") {
+          setFala("")
+          inicioFalaRef.current = null
+          duracaoFalaRef.current = 0
+        }
+          else if (m.type === "response.output_audio_transcript.delta") setFala((f) => f + m.delta)
           else if (m.type === "input_audio_buffer.speech_started") calar ()
-          else if (m.type === "error") console.error("[entrevista]", m.error?.message ?? m.Error)
+          else if (m.type === "error") console.error("[entrevista]", m.error?.message ?? m.error)
       }
 
       ws.onclose = (e) => {
@@ -175,10 +186,17 @@ const useEntrevista = () => {
     return Math.max(0, Math.min(1, (volume - 0.01) * 6))
   }
 
+  const getProgresso = () => {
+    const ctx = ctxRef.current
+    const inicio = inicioFalaRef.current
+    if (!ctx || inicio === null || duracaoFalaRef.current === 0) return 0
+    return Math.max(0, Math.min(1, (ctx.currentTime - inicio) / duracaoFalaRef.current))
+  }
+
   const setMicrofone = (ligado: boolean) => 
     micRef.current?.getAudioTracks().forEach((t) => { t.enabled = ligado })
 
-  return { status, falando, iniciar, encerrar, getNivelFala, setMicrofone }
+  return { status, falando, fala, iniciar, encerrar, getNivelFala, getProgresso, setMicrofone }
   
 }
 
