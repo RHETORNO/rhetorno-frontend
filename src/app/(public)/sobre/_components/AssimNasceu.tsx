@@ -1,11 +1,11 @@
 export default function AssimNasceu() {
     return (
-        <section className="bg-background px-4 py-20 md:px-[120px] md:py-[120px]">
-            <div className="mx-auto flex max-w-[1200px] flex-col gap-8 md:flex-row md:gap-24">
-                <h2 className="text-3xl text-foreground font-medium leading-[1.12] tracking-[-1.2px] md:w-[400px] md:shrink-0 md:text-5xl">
+        <section className="bg-background px-4 py-20 xl:px-[120px] xl:py-[120px]">
+            <div className="mx-auto flex max-w-[1200px] flex-col gap-8 xl:flex-row xl:gap-24">
+                <h2 className="text-3xl text-foreground font-medium leading-[1.12] tracking-[-1.2px] xl:w-[400px] xl:shrink-0 xl:text-5xl">
                     Da preparação até a oportunidade
                 </h2>
-                <div className="flex flex-col gap-2 text-base leading-[1.65] text-muted-foreground md:text-lg md:text-justify">
+                <div className="flex flex-col gap-2 text-base leading-[1.65] text-muted-foreground xl:text-lg xl:text-justify">
                     <p>
                         Diante dessa realidade, desenvolvemos o RHETORNO, uma plataforma que transforma a preparação em um caminho para novas oportunidades.
                     </p>

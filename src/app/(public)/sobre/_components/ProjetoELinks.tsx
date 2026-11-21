@@ -5,22 +5,22 @@ const REPOSITORIO_URL = "https://github.com/RHETORNO";
 
 export default function ProjetoELinks() {
     return (
-        <section className="bg-background px-4 py-20 md:px-[120px] md:py-[120px]">
+        <section className="bg-background px-4 py-20 xl:px-[120px] xl:py-[120px]">
             <div className="mx-auto flex max-w-[1200px] flex-col gap-14">
-                <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-                    <div className="flex flex-col items-start gap-6 md:w-[620px]">
+                <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+                    <div className="flex flex-col items-start gap-6 xl:w-[620px]">
                         <span className="rounded-full border border-foreground/18 px-3.5 py-1.5 text-[13px] font-medium leading-[1.4] text-foreground">
                             Por trás do código
                         </span>
-                        <h2 className="text-3xl font-medium leading-[1.12] tracking-[-1.2px]  text-foreground md:text-5xl">
+                        <h2 className="text-3xl font-medium leading-[1.12] tracking-[-1.2px]  text-foreground xl:text-5xl">
                             Um projeto aberto, feito para ser conhecido.
                         </h2>
                     </div>
-                    <p className="text-base leading-[1.6] text-muted-foreground md:w-[460px] md:text-lg">
+                    <p className="text-base leading-[1.6] text-muted-foreground xl:w-[460px] xl:text-lg">
                         Acompanhe como o RHETORNO foi construído e as pessoas que estão por trás de cada decisão.
                     </p>
                 </div>
-                <div className="relative flex w-full flex-col gap-10 overflow-hidden rounded-[20px] bg-black p-8 md:w-[475px]">
+                <div className="relative flex w-full flex-col gap-10 overflow-hidden rounded-[20px] bg-black p-8 xl:w-[475px]">
                     <Stardust/>  
 
                     <div className="flex items-center justify-between">

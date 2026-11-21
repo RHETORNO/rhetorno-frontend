@@ -8,11 +8,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 
-const opcoes = [
+export const opcoes = [
     {
         href: "/auth",
-        titulo: "Canditado",
+        titulo: "Candidato",
         descricao: "Encontre oportunidades",
         Icone: UserPlus,
     },
@@ -25,15 +26,24 @@ const opcoes = [
 ]
 
 const Menutrigger = 
-    "group inline-flex items-center gap-1.5 rounded-2xl border border-foreground/70 px-5 py-1.5 text-base font-medium transition-colors duration-200 outline-none hover:cursor-pointer hover:bg-foreground/5 focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[popup-open]:bg-foreground data-[popup-open]:text-background"
+    "group inline-flex items-center gap-1.5 rounded-2xl border px-4 sm:px-5 py-1.5 text-base font-medium transition-colors duration-200 outline-none hover:cursor-pointer hover:bg-foreground/5 focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[popup-open]:bg-foreground data-[popup-open]:text-background"
 
 const span =
     "grid size-9 shrink-0 place-items-center rounded-lg transition-colors duration-150 group-data-[highlighted]/dropdown-menu-item:border-foreground group-data-[highlighted]/dropdown-menu-item:bg-background group-data-[highlighted]/dropdown-menu-item:text-background!"
 
-const Entrar = () => {
+type EntrarProps = {
+    textoClaro?: boolean
+}
+
+const Entrar = ({ textoClaro = false }: EntrarProps) => {
     return(
         <DropdownMenu>
-            <DropdownMenuTrigger className={Menutrigger}>
+            <DropdownMenuTrigger className={cn(
+                Menutrigger,
+                textoClaro
+                ? "border-white/70 text-white/90 hover:bg-white/10"
+                : "border-foreground/70"
+            )}>
                 Entrar
                 <ChevronDown className="size-4 transition-transform duration-200 group-data-[popup-open]:rotate-180 motion-reduce:transition-none" />
             </DropdownMenuTrigger>

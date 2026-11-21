@@ -29,17 +29,29 @@ const passos = [
     }
 ]
 
+// a frase explica a lista de etapas, então no celular ela aparece logo abaixo
+// do título (antes dos cards); no computador continua na coluna da direita
+const frase =
+    "Cada etapa responde a uma dúvida de quem busca emprego, do currículo à mentoria. Siga na ordem ou volte a qualquer uma delas quando precisar."
+
 const Etapas = () => {
     return(
-        <section className="bg-[#F4F4F4] py-17 gap-10 grid grid-cols-[1.3fr_1fr] px-17" id="etapas">
-            <div className="flex flex-col gap-4">
+        <section className="relative scroll-mt-20 overflow-clip bg-[#F4F4F4] py-12 gap-6 grid grid-cols-1 px-6 md:py-17 md:px-17 xl:grid-cols-[1.3fr_1fr] xl:gap-10" id="etapas">
+            {/* celular: as estrelas cadentes passam no fundo da seção inteira
+                (overflow-clip e não overflow-hidden: o hidden quebra o efeito de grudar dos cards) */}
+            <div className="pointer-events-none absolute inset-0 xl:hidden" aria-hidden>
+                <Meteors number={14} />
+            </div>
+            <div className="relative z-10 flex flex-col gap-4">
                 <ProcessCardsTimeline
                 title="Cinco etapas, na ordem em que você vai usar."
+                description={frase}
+                descriptionClassName="text-black/70 xl:hidden"
                 steps={passos}
                 stackOffset={24} />
             </div>
-            <div>
-                <p className="text-4xl max-w-2xl text-black font-semibold pt-24"> Cada etapa responde a uma dúvida comum de quem está buscando emprego. Você pode voltar a qualquer uma delas quando quiser. </p>
+            <div className="relative z-10 hidden xl:block">
+                <p className="text-4xl max-w-2xl text-black font-semibold pt-24"> {frase} </p>
                 <div className="relative h-[500px] w-full overflow-hidden">
                 <Meteors />
                 </div>

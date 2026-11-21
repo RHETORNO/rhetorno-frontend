@@ -34,12 +34,12 @@ const planos = [
 
 const Precos = () => {
     return (
-        <section className="justify-center text-center py-12 bg-background px-6">
-            <div className="flex flex-col gap-3 py-4">
-                <h2 className="text-4xl"> Comece gratis e evolua no seu ritmo </h2>
-                <p className="text-lg text-foreground/70 max-w-3xl mx-auto"> a versão gratuita permite experimentar as analises basicas. Os planos pagos ampliam o historico e liberam o mentor de inteligencia artificial </p>
+        <section className="justify-center text-center py-12 bg-background px-6 md:py-16">
+            <div className="revelar flex flex-col gap-3 py-4">
+                <h2 className="text-3xl sm:text-4xl"> Comece gratis e evolua no seu ritmo </h2>
+                <p className="text-balance text-base text-foreground/70 max-w-3xl mx-auto sm:text-lg"> a versão gratuita permite experimentar as analises basicas. Os planos pagos ampliam o historico e liberam o mentor de inteligencia artificial </p>
             </div>
-            <div className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="revelar mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
                 {planos.map((p) => (
                 <PixelCard
                     key={p.nome}
@@ -67,7 +67,7 @@ const Precos = () => {
                         <h3 className="text-lg font-semibold"> {p.nome} </h3>
                         {p.destaque && <span className="ml-auto text-sm"> Popular </span>}
                     </div>
-                    <p className="text-5xl font-semibold">
+                    <p className="text-4xl font-semibold sm:text-5xl">
                         {p.preco}
                         <span className="ml-1 text-base font-normal text-foreground/50">/mês</span>
                     </p>

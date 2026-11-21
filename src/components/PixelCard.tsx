@@ -613,16 +613,27 @@ export default function PixelCard({
     resizeObserver.observe(container);
 
     let introStarted = false;
+    const semHover = window.matchMedia('(hover: none)').matches;
     const visibility = new IntersectionObserver(entries => {
       state.visible = entries.some(entry => entry.isIntersecting);
       const s = settingsRef.current;
+      // celular não tem "passar o mouse": acende quando o card entra na tela
+      if (semHover && state.mode === 'hover') {
+        const bemVisivel = entries.some(entry => entry.intersectionRatio >= 0.6);
+        if (bemVisivel && !state.active) {
+          state.releaseAt = -1;
+          setActiveState(true);
+        } else if (!bemVisivel && state.active) {
+          setActiveState(false);
+        }
+      }
       if (state.visible && !introStarted && (s.trigger === 'always' || (s.intro && !reduce))) {
         introStarted = true;
         build();
         state.introAt = state.time + s.introDelay / 1000;
       }
       if (state.visible) wake();
-    });
+    }, { threshold: [0, 0.6] });
     visibility.observe(container);
 
     engineRef.current = { onFocus, onBlur, wake, sync };

@@ -33,9 +33,9 @@ const perguntas = [
 
 const Faq = () => {
     return (
-        <section className="grid grid-cols-3 gap-15 px-17 py-25">
-            <h2 className="text-4xl font-light"> Dúvidas comuns </h2>
-            <div className="col-span-2 max-w-2xl">
+        <section className="grid grid-cols-1 gap-6 px-6 py-16 md:px-17 md:py-25 lg:grid-cols-3 lg:gap-15">
+            <h2 className="revelar text-3xl font-light sm:text-4xl"> Dúvidas comuns </h2>
+            <div className="revelar max-w-2xl lg:col-span-2">
                 <Accordion>
                     {perguntas.map(({ id, pergunta, resposta }) => (
                         <AccordionItem key={id} value={id}>
