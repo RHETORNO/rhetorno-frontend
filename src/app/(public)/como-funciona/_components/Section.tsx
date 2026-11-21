@@ -46,16 +46,16 @@ const pagos = [
 
 const Section = () => {
     return (
-        <section className="grid grid-cols-3 gap-15 px-17 py-25 bg-foreground">
-            <div className="flex flex-col gap-8">
-                <h2 className="text-8xl max-w-2xl text-accent"> Você comeca sem pagar nada. </h2>
+        <section className="grid grid-cols-1 gap-8 px-6 py-16 bg-foreground md:grid-cols-2 md:px-17 md:py-25 xl:grid-cols-3 xl:gap-15">
+            <div className="revelar flex flex-col gap-6 md:col-span-2 md:gap-8 xl:col-span-1">
+                <h2 className="text-5xl max-w-2xl text-accent sm:text-6xl xl:text-8xl"> Você comeca sem pagar nada. </h2>
                 <p className="text-sm text-accent/70"> A versão gratuita já cobre a análise do currículo e as trilhas de cursos. O plano Pro amplia o histórico e libera o mentor de IA. </p>
             </div>
-            <div>
+            <div className="revelar">
                 <Card className="h-full">
                     <CardHeader>
                     <CardTitle> Gratís </CardTitle>
-                    <CardDescription className="text-7xl text-foreground pb-10"> R$ 0 <span className="text-base text-foreground ">/mês</span> </CardDescription>
+                    <CardDescription className="text-5xl text-foreground pb-6 sm:text-6xl md:text-5xl lg:text-6xl xl:text-7xl xl:pb-10"> R$ 0 <span className="text-base text-foreground ">/mês</span> </CardDescription>
                     </CardHeader>
 
                     {gratuito.map(({ id, icon: Icon, conteudo}) => (
@@ -66,11 +66,11 @@ const Section = () => {
                     ))}
                 </Card>
             </div>
-            <div>
+            <div className="revelar">
                 <Card className="h-full">
                     <CardHeader>
                     <CardTitle> Premium </CardTitle>
-                    <CardDescription className="text-7xl text-foreground pb-6"> R$ 110,00 <span className="text-base text-foreground ">/mês</span></CardDescription>
+                    <CardDescription className="text-5xl text-foreground pb-6 sm:text-6xl md:text-5xl lg:text-6xl xl:text-7xl"> R$ 110,00 <span className="text-base text-foreground ">/mês</span></CardDescription>
                     </CardHeader>
 
                     {pagos.map(({ id, icon: Icon, conteudo}) => (

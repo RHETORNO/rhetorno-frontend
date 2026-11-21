@@ -105,10 +105,10 @@ export function ScrollSequence({
       style={{ height: `${(scrollLength + 1) * 100}vh` }}
       className="relative"
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
+      <div className="sticky top-0 h-svh w-full overflow-hidden bg-black">
         <canvas ref={canvasRef} className="h-full w-full" aria-hidden />
         <div className="pointer-events-none absolute inset-0">{children}</div>
-        <div className="absolute right-6 top-1/2 h-40 w-px -translate-y-1/2 bg-white/25">
+        <div className="absolute right-3 top-1/2 h-28 sm:right-6 sm:h-40 w-px -translate-y-1/2 bg-white/25">
           <div
             className="absolute left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
             style={{ top: `${progress * 100}%` }}

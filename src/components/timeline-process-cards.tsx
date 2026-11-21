@@ -30,6 +30,8 @@ export interface ProcessCardsTimelineProps {
   title: string;
   /** Optional section introduction. */
   description?: string;
+  /** Classes extras para o parágrafo da introdução (ex.: esconder no computador). */
+  descriptionClassName?: string;
   /** Three to six steps in process order. */
   steps: ProcessCardStep[];
   /** Visible vertical offset between stacked cards in pixels. @default 24 */
@@ -42,8 +44,9 @@ type ProcessTimelineStyle = CSSProperties & {
   "--process-stack-offset": string;
 };
 
-const DESKTOP_MOTION_QUERY =
-  "(prefers-reduced-motion: no-preference) and (min-width: 64rem) and (hover: hover) and (pointer: fine)";
+// os cards empilham com a rolagem em qualquer tela (celular, tablet e computador);
+// só desliga se a pessoa preferir menos animação no aparelho
+const MOTION_QUERY = "(prefers-reduced-motion: no-preference)";
 
 /*
  * The authored layout is an ordinary static list. Only the composite desktop
@@ -129,7 +132,7 @@ const PROCESS_CARDS_CSS = `
   }
 }
 
-@media ${DESKTOP_MOTION_QUERY} {
+@media ${MOTION_QUERY} {
   .te-process-cards[data-enhanced="true"] .te-process-card__shell {
     position: sticky;
     top: var(--process-stack-base);
@@ -210,6 +213,7 @@ function clampStackOffset(value: number): number {
 export function ProcessCardsTimeline({
   title,
   description,
+  descriptionClassName,
   steps,
   stackOffset = 24,
   className,
@@ -247,7 +251,7 @@ export function ProcessCardsTimeline({
 
       const mm = gsap.matchMedia();
 
-      mm.add(DESKTOP_MOTION_QUERY, () => {
+      mm.add(MOTION_QUERY, () => {
         root.setAttribute("data-enhanced", "true");
 
         const heading = root.querySelector<HTMLElement>(
@@ -430,7 +434,7 @@ export function ProcessCardsTimeline({
             {title}
           </h2>
           {description ? (
-            <p className="mt-5 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className={cn("mt-5 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg", descriptionClassName)}>
               {description}
             </p>
           ) : null}
