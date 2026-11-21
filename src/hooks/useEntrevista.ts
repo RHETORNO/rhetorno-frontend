@@ -5,6 +5,7 @@ import {
   useRef,
   useState
 } from "react"
+import { bool } from "three/src/nodes/tsl/TSLCore.js"
 
 const recurso = "rhetorno-mentoria-resource"
 const projeto = "rhetorno-mentoria"
@@ -21,10 +22,20 @@ const base64ParaAudio = (base64: string) => {
   return amostras
 }
 
+const audioParaBase64 = (buffer: ArrayBuffer) => {
+  const bytes = new Uint8Array(buffer)
+  let texto = ""
+  for (let i = 0; i < bytes.length; i++) texto += String.fromCharCode(bytes[i])
+  return btoa(texto)
+}
+
 const useEntrevista = () => {
   const wsRef = useRef<WebSocket | null>(null)
   const ctxRef = useRef<AudioContext | null>(null)
+  const micCtxRef = useRef<AudioContext | null>(null)
+  const micRef = useRef<MediaStream | null>(null)
   const analisadorRef = useRef<{ analyser: AnalyserNode; dados: Float32Array<ArrayBuffer> } | null>(null)
+  const fontesRef = useRef(new Set<AudioBufferSourceNode>())
   const proximoRef = useRef(0)
   const [status, setStatus] = useState<StatusEntrevista>("parada")
   const [falando, setFalando] = useState(false)
@@ -38,29 +49,39 @@ const useEntrevista = () => {
     const buffer = ctx.createBuffer(1, amostras.length, taxa)
     buffer.copyToChannel(amostras, 0)
 
-    const font = ctx.createBufferSource()
-    font.buffer = buffer
-    font.connect(analisador.analyser)
+    const fonte = ctx.createBufferSource()
+    fonte.buffer = buffer
+    fonte.connect(analisador.analyser)
     proximoRef.current = Math.max(proximoRef.current, ctx.currentTime)
-    font.start(proximoRef.current)
+    fonte.start(proximoRef.current)
     proximoRef.current += buffer.duration
 
-    font.onended = () => {
-      if (ctx.currentTime >= proximoRef.current - 0.05) setFalando(false)
+    fontesRef.current.add(fonte)
+    fonte.onended = () => {
+      fontesRef.current.delete(fonte)
+      if (fontesRef.current.size === 0) setFalando(false)
     }
     setFalando(true)
   }
 
   const calar = () => {
-    
+    for (const fonte of fontesRef.current) fonte.stop()
+    fontesRef.current.clear()
+    proximoRef.current = 0
+    setFalando(false)
   }
 
   const encerrar = () => {
     wsRef.current?.close(1000)
     wsRef.current = null
+    micRef.current?.getTracks().forEach((t) => t.stop())
+    micRef.current = null
+    micCtxRef.current?.close()
+    micCtxRef.current = null
     ctxRef.current?.close()
     ctxRef.current = null
     analisadorRef.current = null
+    fontesRef.current.clear()
     setFalando(false)
     setStatus("parada")
   }
@@ -71,14 +92,23 @@ const useEntrevista = () => {
 
     try {
       const ctx = new AudioContext({ sampleRate: taxa })
+      const micCtx = new AudioContext()
       const analyser = ctx.createAnalyser()
       analyser.fftSize = 512
       analyser.connect(ctx.destination)
       ctxRef.current = ctx
+      micCtxRef.current = micCtx
       analisadorRef.current = { analyser, dados: new Float32Array(analyser.fftSize) }
       proximoRef.current = 0
 
-      const resposta = await fetch("/api/voz/token", { method: "POST" }) 
+      const [resposta, mic] = await Promise.all([
+        fetch("/api/voz/token", { method: "POST" }),
+        navigator.mediaDevices.getUserMedia({
+         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true}
+        }),
+        micCtx.audioWorklet.addModule("/worklets/microfone.js")
+      ])
+      micRef.current = mic
       if (!resposta.ok) throw new Error(`token falhou (${resposta.status})`)
       const { token } = await resposta.json()
 
@@ -89,6 +119,16 @@ const useEntrevista = () => {
 
       const ws = new WebSocket(url)
       wsRef.current = ws 
+
+      const fonteMic = micCtx.createMediaStreamSource(mic)
+      const gravador = new AudioWorkletNode(micCtx, "microfone")
+      fonteMic.connect(gravador)
+      gravador.connect(micCtx.destination)
+      gravador.port.onmessage = (e: MessageEvent<ArrayBuffer>) => {
+        if (ws.readyState !== WebSocket.OPEN) return
+        ws.send(JSON.stringify({ type: "input_audio_buffer.append", audio: audioParaBase64(e.data) }))
+      }
+  
       ws.onopen = () => {
         setStatus("conectada")
         ws.send(JSON.stringify({ type: "session.update", session: { type: "realtime" } }))
@@ -97,7 +137,8 @@ const useEntrevista = () => {
       ws.onmessage = (e) => {
         const m = JSON.parse(e.data)
         if (m.type === "response.output_audio.delta") tocar(m.delta)
-          else if (m.type === "error") console.error("[entrevista]", m.error)
+          else if (m.type === "input_audio_buffer.speech_started") calar ()
+          else if (m.type === "error") console.error("[entrevista]", m.error?.message ?? m.Error)
       }
 
       ws.onclose = (e) => {
@@ -118,6 +159,8 @@ const useEntrevista = () => {
     return () => {
       wsRef.current?.close(1000)
       ctxRef.current?.close()
+      micCtxRef.current?.close()
+      micRef.current?.getTracks().forEach((t) => t.stop())
     }
   }, [])
 
@@ -132,7 +175,10 @@ const useEntrevista = () => {
     return Math.max(0, Math.min(1, (volume - 0.01) * 6))
   }
 
-  return { status, falando, iniciar, encerrar, getNivelFala }
+  const setMicrofone = (ligado: boolean) => 
+    micRef.current?.getAudioTracks().forEach((t) => { t.enabled = ligado })
+
+  return { status, falando, iniciar, encerrar, getNivelFala, setMicrofone }
   
 }
 

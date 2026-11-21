@@ -53,6 +53,7 @@ const Sala = () => {
 
   const alternarMic = () => {
     setMicrofone(!micLigado)
+    entrevista.setMicrofone(!micLigado)
     setMicLigado(!micLigado)
   }
 
