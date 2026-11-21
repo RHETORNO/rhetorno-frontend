@@ -8,6 +8,7 @@ import PainelOrb from "./orb"
 import Video from "./video"
 import Controles from "./controles"
 import { SplitText } from "@/components/ui/split-text"
+import useEntrevista from "@/hooks/useEntrevista"
 
 const estadosTeste: OrbState[] = ['idle', 'listening', 'thinking', 'speaking']
 
@@ -32,6 +33,18 @@ const Sala = () => {
   const [segundos, setSegundos] = useState(0)
   
   const { videoRef, resultRef, status, fps, getAudioLevel, setMicrofone, setCamera } = useVisionTracker()
+
+  const entrevista = useEntrevista()
+
+  const estadoOrb: OrbState =
+    entrevista.status === "conectada" ? (entrevista.falando ? "speaking" : "listening")
+      : entrevista.status === "conectando" ? "thinking" 
+        : orbState
+
+  const nivelOrb =
+    estadoOrb === "speaking" ? entrevista.getNivelFala
+      : micLigado ? getAudioLevel
+      : () => 0
 
   useEffect(() => {
     const id = setInterval(() => setSegundos((s) => s + 1), 1000)
@@ -65,9 +78,9 @@ const Sala = () => {
 
       <section className="grid min-h-0 flex-1 grid-cols-1 items-center gap-6 md:grid-cols-[1.2fr_1fr] md:gap-12">
         <PainelOrb
-          state={orbState}
+          state={estadoOrb}
           visao={resultRef}
-          nivelAudio={micLigado ? getAudioLevel : () => 0}
+          nivelAudio={nivelOrb}
         />
         <Video videoRef={videoRef} visao={resultRef} status={status} fps={fps} camLigada={camLigada} />
       </section>
@@ -82,7 +95,12 @@ const Sala = () => {
           camLigada={camLigada}
           onMic={alternarMic}
           onCam={alternarCam}
-          onEncerrar={() => router.push("/mentoria-ia")}
+          entrevista={entrevista.status}
+          onIniciar={entrevista.iniciar}
+          onEncerrar={() => {
+            entrevista.encerrar()
+            router.push("/mentoria-ia")
+          }}
         />
       </div>
 

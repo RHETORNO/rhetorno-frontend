@@ -51,6 +51,10 @@ const useEntrevista = () => {
     setFalando(true)
   }
 
+  const calar = () => {
+    
+  }
+
   const encerrar = () => {
     wsRef.current?.close(1000)
     wsRef.current = null
@@ -74,7 +78,7 @@ const useEntrevista = () => {
       analisadorRef.current = { analyser, dados: new Float32Array(analyser.fftSize) }
       proximoRef.current = 0
 
-      const resposta = await fetch("api/voz/token", { method: "POST" }) 
+      const resposta = await fetch("/api/voz/token", { method: "POST" }) 
       if (!resposta.ok) throw new Error(`token falhou (${resposta.status})`)
       const { token } = await resposta.json()
 
@@ -87,12 +91,12 @@ const useEntrevista = () => {
       wsRef.current = ws 
       ws.onopen = () => {
         setStatus("conectada")
-        ws.send(JSON.stringify({ type: "session.update", seassion: { type: "realtime" } }))
+        ws.send(JSON.stringify({ type: "session.update", session: { type: "realtime" } }))
       }
 
       ws.onmessage = (e) => {
         const m = JSON.parse(e.data)
-        if (m.type === "response.output_audio:delta") tocar(m.delta)
+        if (m.type === "response.output_audio.delta") tocar(m.delta)
           else if (m.type === "error") console.error("[entrevista]", m.error)
       }
 

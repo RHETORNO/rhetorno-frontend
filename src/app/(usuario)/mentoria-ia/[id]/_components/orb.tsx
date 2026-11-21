@@ -38,7 +38,7 @@ const PainelOrb = ({ state, visao, nivelAudio }: Props) => {
         state={state}
         active
         gaze={olharDoRosto}
-        audioLevel={state === "listening" ? nivelAudio : undefined}
+        audioLevel={state === "listening" || state === "speaking" ? nivelAudio : undefined}
         className="w-[min(280px,65%)] md:w-[min(440px,85%)]"
       />
       <p
