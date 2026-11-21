@@ -30,24 +30,25 @@ const solucoes: Solucao[] = [
 
 const Header = () => {
 
+    const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false) // teoricamente irei fazer icar true com 50px
-
+    
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY >= 400)
 
         onScroll() // cobre o caso de recarregar a pagina ja rolada/scroladars
         window.addEventListener("scroll", onScroll, { passive: true}) // aqui deixa true
         return () => window.removeEventListener("scroll", onScroll)
-    }, [])
+    }, [pathname])
 
     
-    const pathname = usePathname()
+    const showBackground = scrolled || pathname === "/como-funciona"
     const textoClaro = pathname === "/" && !scrolled
 
     // celular e tablet: header de vidro transparente; computador (lg): fundo com desfoque e sombra ao rolar
     return (
         <header className={`fixed inset-x-0 top-0 z-50 border-b py-1.5 transition-all duration-300 lg:border-b-0 ${
-            scrolled
+            showBackground
             ? "border-foreground/10 bg-background/40 backdrop-blur-xl backdrop-saturate-150 lg:bg-background/70 lg:shadow-sm lg:backdrop-blur-md"
             : "border-transparent bg-transparent"
         }`}>
