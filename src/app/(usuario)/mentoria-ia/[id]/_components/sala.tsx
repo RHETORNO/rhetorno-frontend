@@ -10,6 +10,7 @@ import Controles from "./controles"
 import { SplitText } from "@/components/ui/split-text"
 import useEntrevista from "@/hooks/useEntrevista"
 import Legendas from "./legenda"
+import useComportamento from "@/hooks/useComportamento"
 
 const estadosTeste: OrbState[] = ['idle', 'listening', 'thinking', 'speaking']
 
@@ -24,9 +25,14 @@ const Sala = () => {
   const [camLigada, setCamLigada] = useState(true)
   const [segundos, setSegundos] = useState(0)
   
-  const { videoRef, resultRef, status, fps, getAudioLevel, setMicrofone, setCamera } = useVisionTracker()
+  const { videoRef, resultRef, status, fps, getAudioLevel, setMicrofone, setCamera } =
+  useVisionTracker()
 
   const entrevista = useEntrevista()
+  const comportamento = useComportamento(resultRef, {
+    ativo: () => entrevista.status === "conectada",
+    quemFala: entrevista.getQuemFala
+  })
 
   const estadoOrb: OrbState =
     entrevista.status === "conectada" ? (entrevista.falando ? "speaking" : "listening")
@@ -93,6 +99,7 @@ const Sala = () => {
           entrevista={entrevista.status}
           onIniciar={entrevista.iniciar}
           onEncerrar={() => {
+            console.log("[resumo]", comportamento.getResumo())
             entrevista.encerrar()
             router.push("/mentoria-ia")
           }}

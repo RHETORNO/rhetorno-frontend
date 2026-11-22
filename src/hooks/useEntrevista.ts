@@ -5,6 +5,7 @@ import {
   useRef,
   useState
 } from "react"
+import type { Quem } from "@/lib/comportamento"
 
 const recurso = "rhetorno-mentoria-resource"
 const projeto = "rhetorno-mentoria"
@@ -38,6 +39,7 @@ const useEntrevista = () => {
   const proximoRef = useRef(0)
   const inicioFalaRef = useRef<number | null>(null)
   const duracaoFalaRef = useRef(0)
+  const voceFalandoRef = useRef(false)
   const [fala, setFala] = useState("")
   const [status, setStatus] = useState<StatusEntrevista>("parada")
   const [falando, setFalando] = useState(false)
@@ -89,6 +91,7 @@ const useEntrevista = () => {
     setFalando(false)
     setStatus("parada")
     setFala("")
+    voceFalandoRef.current = false
   }
 
   const iniciar = async () => {
@@ -148,7 +151,11 @@ const useEntrevista = () => {
           duracaoFalaRef.current = 0
         }
           else if (m.type === "response.output_audio_transcript.delta") setFala((f) => f + m.delta)
-          else if (m.type === "input_audio_buffer.speech_started") calar ()
+          else if (m.type === "input_audio_buffer.speech_started") {
+            voceFalandoRef.current = true
+            calar()
+          }
+          else if (m.type === "input_audio_buffer.speech_stopped") voceFalandoRef.current = false
           else if (m.type === "error") console.error("[entrevista]", m.error?.message ?? m.error)
       }
 
@@ -196,7 +203,10 @@ const useEntrevista = () => {
   const setMicrofone = (ligado: boolean) => 
     micRef.current?.getAudioTracks().forEach((t) => { t.enabled = ligado })
 
-  return { status, falando, fala, iniciar, encerrar, getNivelFala, getProgresso, setMicrofone }
+  const getQuemFala = (): Quem =>
+    fontesRef.current.size > 0 ? "ia" : voceFalandoRef.current ? "voce" : null
+
+  return { status, falando, fala, iniciar, encerrar, getNivelFala, getProgresso, getQuemFala, setMicrofone }
   
 }
 
