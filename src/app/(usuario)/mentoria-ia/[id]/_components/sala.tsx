@@ -11,6 +11,7 @@ import { SplitText } from "@/components/ui/split-text"
 import useEntrevista from "@/hooks/useEntrevista"
 import Legendas from "./legenda"
 import useComportamento from "@/hooks/useComportamento"
+import { resumirFala } from "@/lib/comportamento"
 
 const estadosTeste: OrbState[] = ['idle', 'listening', 'thinking', 'speaking']
 
@@ -99,7 +100,13 @@ const Sala = () => {
           entrevista={entrevista.status}
           onIniciar={entrevista.iniciar}
           onEncerrar={() => {
-            console.log("[resumo]", comportamento.getResumo())
+            const resumo = comportamento.getResumo()
+            const conversa = entrevista.getConversa()
+            console.log("[entrevista]", {
+              comportamento: resumo,
+              fala: resumirFala(conversa, resumo?.conversa.segundosFalando.voce ?? 0),
+              conversa
+            })
             entrevista.encerrar()
             router.push("/mentoria-ia")
           }}

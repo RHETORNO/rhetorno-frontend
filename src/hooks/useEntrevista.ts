@@ -12,6 +12,17 @@ const projeto = "rhetorno-mentoria"
 const agente = "affable-agent-541mxrncsr"
 const taxa = 24000
 
+const transcricao = [
+  { audio: { input: { transcription: { model: "azure-speech", language: "pt-BR" } } } },
+  { input_audio_transcription: { model: "azure-speech", language: "pt-BR" } }
+]
+
+export type Fala = {
+  quem: "ia" | "voce"
+  texto: string
+  t: number
+}
+
 export type StatusEntrevista = "parada" | "conectando" | "conectada" | "erro"
 
 const base64ParaAudio = (base64: string) => {
@@ -40,6 +51,10 @@ const useEntrevista = () => {
   const inicioFalaRef = useRef<number | null>(null)
   const duracaoFalaRef = useRef(0)
   const voceFalandoRef = useRef(false)
+  const conversaRef = useRef<Fala[]>([])
+  const comecoRef = useRef(0)
+  const momentoIaRef = useRef(0)
+  const momentosVoceRef = useRef(new Map<string, number>())
   const [fala, setFala] = useState("")
   const [status, setStatus] = useState<StatusEntrevista>("parada")
   const [falando, setFalando] = useState(false)
@@ -108,6 +123,8 @@ const useEntrevista = () => {
       micCtxRef.current = micCtx
       analisadorRef.current = { analyser, dados: new Float32Array(analyser.fftSize) }
       proximoRef.current = 0
+      conversaRef.current = []
+      momentosVoceRef.current.clear()
 
       const [resposta, mic] = await Promise.all([
         fetch("/api/voz/token", { method: "POST" }),
@@ -137,26 +154,56 @@ const useEntrevista = () => {
         ws.send(JSON.stringify({ type: "input_audio_buffer.append", audio: audioParaBase64(e.data) }))
       }
   
+      let tentativa = 0
+      const pedirTranscricao = () =>
+        ws.send(JSON.stringify({ type: "session.update", session: { type: "realtime", ...transcricao[tentativa] } }))
+
+      const agora = () => (performance.now() - comecoRef.current) / 1000
+      const vistos = new Set<string>()
+
       ws.onopen = () => {
         setStatus("conectada")
+        comecoRef.current = performance.now()
         ws.send(JSON.stringify({ type: "session.update", session: { type: "realtime" } }))
+        pedirTranscricao()
       }
 
       ws.onmessage = (e) => {
         const m = JSON.parse(e.data)
         if (m.type === "response.output_audio.delta") tocar(m.delta)
         else if (m.type === "response.created") {
+          momentoIaRef.current = agora()
           setFala("")
           inicioFalaRef.current = null
           duracaoFalaRef.current = 0
         }
           else if (m.type === "response.output_audio_transcript.delta") setFala((f) => f + m.delta)
+          else if (m.type === "response.output_audio_transcript.done" || m.type === "response.audio_transcript.done")
+            conversaRef.current.push({ quem: "ia", texto: m.transcript, t: momentoIaRef.current })
           else if (m.type === "input_audio_buffer.speech_started") {
+            momentosVoceRef.current.set(m.item_id, agora())
             voceFalandoRef.current = true
             calar()
           }
           else if (m.type === "input_audio_buffer.speech_stopped") voceFalandoRef.current = false
-          else if (m.type === "error") console.error("[entrevista]", m.error?.message ?? m.error)
+          else if (m.type === "conversation.item.input_audio_transcription.completed") {
+            const t = momentosVoceRef.current.get(m.item_id) ?? agora()
+            if (m.transcript?.trim()) conversaRef.current.push({ quem: "voce", texto: m.transcript.trim(), t })
+          }
+          else if (m.type === "conversation.item.input_audio_transcription.failed")
+            console.warn("[entrevista] transcrição falhou", m.error?.message ?? m.error)
+          else if (m.type === "error") {
+            const mensagem = String(m.error?.message ?? "")
+            if (tentativa === 0 && /transcri|audio\.input|input_audio/i.test(mensagem)) {
+              tentativa = 1
+              pedirTranscricao()
+            }
+            else console.error("[entrevista]", m.error?.message ?? m.error)
+          }
+          else if (process.env.NODE_ENV === "development" && !vistos.has(m.type)) {
+            vistos.add(m.type)
+            console.debug("[entrevista] evento", m.type)
+          }
       }
 
       ws.onclose = (e) => {
@@ -203,10 +250,12 @@ const useEntrevista = () => {
   const setMicrofone = (ligado: boolean) => 
     micRef.current?.getAudioTracks().forEach((t) => { t.enabled = ligado })
 
+  const getConversa = () => [...conversaRef.current].sort((a, b) => a.t - b.t)
+
   const getQuemFala = (): Quem =>
     fontesRef.current.size > 0 ? "ia" : voceFalandoRef.current ? "voce" : null
 
-  return { status, falando, fala, iniciar, encerrar, getNivelFala, getProgresso, getQuemFala, setMicrofone }
+  return { status, falando, fala, iniciar, encerrar, getNivelFala, getProgresso, getQuemFala, getConversa, setMicrofone }
   
 }
 

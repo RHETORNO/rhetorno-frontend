@@ -411,3 +411,34 @@ export const montarResumo = (
 }
 
 export type Resumo = ReturnType<typeof montarResumo>
+
+const semAcento = (t: string) => t.normalize("NFD").replace(/\p{M}/gu, "")
+
+const vicios = ["tipo", "ne", "entao", "ai", "hum", "hmm", "ee", "eee", "sabe", "basicamente", "literalmente", "enfim"]
+const viciosDuplos = ["tipo assim", "meio que", "sei la"]
+
+export const resumirFala = (falas: { quem: "ia" | "voce"; texto: string }[], segundosFalando: number) => {
+  const respostas = falas.filter((f) => f.quem === "voce")
+  const palavrasPorResposta = respostas.map((r) => semAcento(r.texto.toLowerCase()).match(/[\p{L}']+/gu) ?? [])
+  const todas = palavrasPorResposta.flat()
+  const contagem: Record<string, number> = {}
+
+  for (let i = 0; i < todas.length; i++) {
+    const duplo = `${todas[i]} ${todas[i + 1]}`
+    if (viciosDuplos.includes(duplo)) {
+      contagem[duplo] = (contagem[duplo] ?? 0) + 1
+      i++
+    } else if (vicios.includes(todas[i])) {
+      contagem[todas[i]] = (contagem[todas[i]] ?? 0) + 1
+    }
+  }
+
+  return {
+    respostas: respostas.length,
+    palavras: todas.length,
+    palavrasPorMinuto: segundosFalando > 0 ? Math.round(todas.length / (segundosFalando / 60)) : null,
+    mediaPalavrasPorResposta: respostas.length ? Math.round(todas.length / respostas.length) : null,
+    maiorResposta: Math.max(0, ...palavrasPorResposta.map((p) => p.length)),
+    vicios: contagem
+  }
+}
