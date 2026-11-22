@@ -1,6 +1,4 @@
-import { DefaultAzureCredential } from "@azure/identity"
-
-const credencial = new DefaultAzureCredential
+import { credencial } from "@/lib/azure"
 
 const POST = async () => {
   try {
