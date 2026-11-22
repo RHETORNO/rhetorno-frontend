@@ -1,8 +1,8 @@
-import { credencial } from "@/lib/azure"
+import { getCredencial } from "@/lib/azure"
 
 const POST = async () => {
   try {
-    const { token, expiresOnTimestamp } = await credencial.getToken("https://ai.azure.com/.default")
+    const { token, expiresOnTimestamp } = await getCredencial().getToken("https://ai.azure.com/.default")
      return Response.json({token, expiraEm: expiresOnTimestamp})
   }
   catch (erro) {
