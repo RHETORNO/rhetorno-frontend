@@ -602,6 +602,14 @@ const DotGrid = ({
     window.addEventListener('pointerdown', onDown, { passive: true });
     window.addEventListener('pointerout', onOut);
     window.addEventListener('blur', onLeave);
+    // no celular o navegador cancela o pointermove quando a página rola,
+    // então os pontos seguem o dedo pelos eventos de toque
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (touch) onMove({ clientX: touch.clientX, clientY: touch.clientY, timeStamp: event.timeStamp } as PointerEvent);
+    };
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onLeave, { passive: true });
 
     const resizeObserver = new ResizeObserver(() => {
       resize();
@@ -648,6 +656,8 @@ const DotGrid = ({
       window.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointerout', onOut);
       window.removeEventListener('blur', onLeave);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onLeave);
       document.removeEventListener('visibilitychange', onVisibility);
       gl.deleteBuffer(cornerBuffer);
       gl.deleteBuffer(instanceBuffer);

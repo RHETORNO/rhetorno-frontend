@@ -5,6 +5,8 @@ import Header from "./_components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import Footer from "@/components/layout/footer";
 import VLibras from "@/components/accessibility/VLibras";
+import RolagemSuave from "./_components/RolagemSuave";
+import "./revelar.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +43,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       disableTransitionOnChange
       >
         <VLibras />
+        {/* rolagem suave com a rodinha do mouse em todas as páginas públicas */}
+        <RolagemSuave />
         <Header/>
         {children}
         <Footer/>

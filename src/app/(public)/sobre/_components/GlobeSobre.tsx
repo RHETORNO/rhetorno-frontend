@@ -194,7 +194,7 @@ export default function GlobeSobre() {
     }, []);
 
     return (
-        <section className="flex justify-center bg-background px-4 pb-20 md:px-[120px]">
+        <section className="flex justify-center bg-background px-4 pb-20 xl:px-[120px]">
             <canvas
                 ref={canvasRef}
                 aria-label="Globo pontilhado conectando o Brasil ao mundo"

@@ -10,27 +10,27 @@ const listaDescricao = [
 
 const Acreditamos = () => {
     return (
-        <section className="py-18 px-16 grid grid-cols-[1.5fr_2fr] gap-10 bg-muted">
-            <div className="flex flex-col gap-6">
-                <h4 className="text-6xl max-w-sm">
+        <section className="py-14 px-6 grid grid-cols-1 gap-6 bg-muted md:py-18 md:px-16 lg:grid-cols-[1.5fr_2fr] lg:gap-10">
+            <div className="revelar flex flex-col gap-6">
+                <h4 className="text-4xl max-w-sm sm:text-5xl lg:text-6xl">
                     No que acreditamos
                 </h4>
-                <p className="text-lg text-foreground/70">
+                <p className="text-justify text-base text-foreground/70 sm:text-lg lg:text-left">
                     Uma rejeição não define o potencial de ninguém. Por trás de cada currículo existe uma pessoa com objetivos e vontade de crescer.
                 </p>
             </div>
-            <div className="py-4">
+            <div className="lg:py-4">
                 {/* Por favor nao tocar aqui por que eu tambem nao sei o que esta acontecendo */}
                 {listaDescricao.map((l) => (
                     <Fragment key={l.title}>
-                        <div className="grid grid-cols-[0.3fr_2fr] border-y p-8 justify-center">
+                        <div className="grid grid-cols-1 gap-2 border-y py-6 sm:grid-cols-[7.5rem_1fr] sm:gap-4 sm:p-8 justify-center">
                         <ScrollTextHighlight 
                         text={l.title}
-                        className="text-2xl leading-relaxed font-semibold"/>
+                        className="text-xl leading-relaxed font-semibold sm:text-2xl"/>
                         <div>
                             <ScrollTextHighlight
                             text={l.paragraph}
-                            className="text-lg leading-relaxed font-light" />
+                            className="text-base leading-relaxed font-light sm:text-lg" />
                         </div>
                         </div>
                     </Fragment>

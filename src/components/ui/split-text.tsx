@@ -37,9 +37,10 @@ function groupByWord(graphemes: string[]): string[][] {
     let current: string[] = [];
     for (const g of graphemes) {
         if (g === " ") {
-            if (current.length)
-                groups.push(current);
-            groups.push([g]);
+            // o espaço fica grudado no fim da palavra, senão ele pode cair sozinho
+            // no começo da linha seguinte quando o texto quebra (aparece no celular)
+            current.push(g);
+            groups.push(current);
             current = [];
         }
         else {
