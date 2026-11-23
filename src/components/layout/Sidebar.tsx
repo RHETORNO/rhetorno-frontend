@@ -47,6 +47,12 @@ const grupos: { titulo: string; links: NavLink[] }[] = [
       { name: "Agenda", href: "/agenda", icon: Calendar },
     ],
   },
+  {
+    titulo: "Conta",
+    links: [
+      { name: "Planos", href: "/planos-candidato", icon: Users }
+    ]
+  }
 ];
 
 export function Sidebar({ perfil, children }: { perfil: ReactNode; children: ReactNode }) {
