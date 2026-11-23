@@ -321,6 +321,8 @@ export const regras: Regra[] = [
 
 type Contagem = { ia: number; voce: number; silencio: number }
 
+export type Trecho = { quem: "ia" | "voce"; de: number; ate: number }
+
 const contagem = (): Contagem => ({ ia: 0, voce: 0, silencio: 0 })
 
 export const criarConversa = () => {
@@ -332,6 +334,7 @@ export const criarConversa = () => {
   let gestos = contagem()
   let respostas: number[] = []
   let interrupcoes = 0
+  let trechos: Trecho[] = []
 
   const atualizar = (quem: Quem, olhandoCamera: boolean, gesticulando: boolean, agora: number) => {
     const dt = ultimo === null ? 0 : Math.min((agora - ultimo) / 1000, 0.5)
@@ -341,6 +344,12 @@ export const criarConversa = () => {
     tempo[chave] += dt
     if (olhandoCamera) olhando[chave] += dt
     if (gesticulando) gestos[chave] += dt
+
+    if (quem) {
+      const atual = trechos.at(-1)
+      if (atual && atual.quem === quem && agora - atual.ate < 600) atual.ate = agora
+      else trechos.push({ quem, de: agora, ate: agora })
+    }
 
     if (quem === "ia") fimIa = null
     else if (anterior === "ia") fimIa = agora
@@ -362,6 +371,7 @@ export const criarConversa = () => {
     gestos = contagem()
     respostas = []
     interrupcoes = 0
+    trechos = []
   }
 
   const porcentagem = (parte: number, total: number) => (total > 0 ? Math.round((parte / total) * 100) : null)
@@ -380,7 +390,9 @@ export const criarConversa = () => {
     interrupcoes
   })
 
-  return { atualizar, zerar, resumo }
+  const falas = () => trechos.filter((t) => t.ate - t.de >= 300)
+
+  return { atualizar, zerar, resumo, falas }
 }
 
 export const montarResumo = (
@@ -407,15 +419,26 @@ export const montarResumo = (
     }]
   }))
 
-  return { duracao: Math.round(duracao), eventos, conversa: conversa.resumo() }
+  const relativo = (t: number) => +((t - inicio) / 1000).toFixed(1)
+
+  const linhaDoTempo = {
+    falas: conversa.falas().map((f) => ({ quem: f.quem, de: relativo(f.de), ate: relativo(f.ate) })),
+    eventos: Object.fromEntries(
+      regras
+        .filter((r) => !r.silencioso && detectores[r.nome].momentos.length > 0)
+        .map((r) => [r.nome, detectores[r.nome].momentos.map(relativo)])
+    )
+  }
+
+  return { duracao: Math.round(duracao), eventos, conversa: conversa.resumo(), linhaDoTempo }
 }
 
 export type Resumo = ReturnType<typeof montarResumo>
 
 const semAcento = (t: string) => t.normalize("NFD").replace(/\p{M}/gu, "")
 
-const vicios = ["tipo", "ne", "entao", "ai", "hum", "hmm", "ee", "eee", "sabe", "basicamente", "literalmente", "enfim"]
-const viciosDuplos = ["tipo assim", "meio que", "sei la"]
+const vicios = ["tipo", "ne", "entao", "ai", "hum", "hmm", "ee", "eee", "sabe", "basicamente", "literalmente", "enfim", "que"]
+const viciosDuplos = ["tipo assim", "meio que", "sei la", "ao qual"]
 
 export const resumirFala = (falas: { quem: "ia" | "voce"; texto: string }[], segundosFalando: number) => {
   const respostas = falas.filter((f) => f.quem === "voce")

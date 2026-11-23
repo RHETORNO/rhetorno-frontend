@@ -362,46 +362,61 @@ export type Database = {
           agendada_para: string
           cargo_foco: string
           consentimento_observacao: boolean
+          criada_em: string
+          criterios: Json
           duracao_prevista_min: number | null
           id: number
-          idanalise_curriculo: number
+          idanalise_curriculo: number | null
           idioma: string
           idperfil: string
+          metricas: Json | null
           pontuacao_geral: number | null
           qtd_perguntas: number | null
+          respostas: Json
           resumo: string
           salvar_historico: boolean
           status: Database["public"]["Enums"]["status_entrevista_ia"]
+          transcricao: Json | null
         }
         Insert: {
           agendada_para: string
           cargo_foco: string
           consentimento_observacao?: boolean
+          criada_em?: string
+          criterios?: Json
           duracao_prevista_min?: number | null
           id?: never
-          idanalise_curriculo: number
+          idanalise_curriculo?: number | null
           idioma?: string
           idperfil: string
+          metricas?: Json | null
           pontuacao_geral?: number | null
           qtd_perguntas?: number | null
+          respostas?: Json
           resumo: string
           salvar_historico?: boolean
           status?: Database["public"]["Enums"]["status_entrevista_ia"]
+          transcricao?: Json | null
         }
         Update: {
           agendada_para?: string
           cargo_foco?: string
           consentimento_observacao?: boolean
+          criada_em?: string
+          criterios?: Json
           duracao_prevista_min?: number | null
           id?: never
-          idanalise_curriculo?: number
+          idanalise_curriculo?: number | null
           idioma?: string
           idperfil?: string
+          metricas?: Json | null
           pontuacao_geral?: number | null
           qtd_perguntas?: number | null
+          respostas?: Json
           resumo?: string
           salvar_historico?: boolean
           status?: Database["public"]["Enums"]["status_entrevista_ia"]
+          transcricao?: Json | null
         }
         Relationships: [
           {

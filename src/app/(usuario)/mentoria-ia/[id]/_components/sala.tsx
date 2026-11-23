@@ -25,6 +25,8 @@ const Sala = () => {
   const [micLigado, setMicLigado] = useState(true)
   const [camLigada, setCamLigada] = useState(true)
   const [segundos, setSegundos] = useState(0)
+  const [analisando, setAnalisando] = useState(false)
+  const [pendente, setPendente] = useState<object | null>(null)
   
   const { videoRef, resultRef, status, fps, getAudioLevel, setMicrofone, setCamera } =
   useVisionTracker()
@@ -54,6 +56,28 @@ const Sala = () => {
     setMicrofone(!micLigado)
     entrevista.setMicrofone(!micLigado)
     setMicLigado(!micLigado)
+  }
+
+  const analisar = async (dados: object) => {
+    setAnalisando(true)
+    setPendente(null)
+
+    try {
+      const resposta = await fetch("/api/entrevista/analisar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      })
+      if (!resposta.ok) throw new Error(`status ${resposta.status}`)
+
+      const { id } = await resposta.json()
+      router.push(`/mentoria-ia/relatorio/${id}`)
+    }
+    catch (erro) {
+      console.error("[relatorio]", erro)
+      setPendente(dados)
+      setAnalisando(false)
+    }
   }
 
   const alternarCam = () => {
@@ -86,11 +110,23 @@ const Sala = () => {
 
       <div className="flex flex-col items-center gap-6 md:gap-8">
         <h1 className="max-w-3xl text-balance text-center text-xl font-light leading-snug tracking-tight text-[#2B7FA8] dark:text-sala-texto md:text-3xl">
-          {entrevista.status === "conectada"
-            ? <Legendas texto={entrevista.fala} progresso={entrevista.getProgresso} />
-            : <SplitText text="Quando estiver pronto, comece a entrevista." by="word" immediate stagger={0.06} duration={0.7} />
-          }
+          {analisando
+            ? <SplitText text="Analisando sua entrevista..." by="word" immediate stagger={0.06} duration={0.7} />
+            : entrevista.status === "conectada"
+              ? <Legendas texto={entrevista.fala} progresso={entrevista.getProgresso} />
+            : pendente
+              ? "Não foi possível analisar sua entrevista. Suas respostas continuam aqui."
+              : <SplitText text="Quando estiver pronto, comece a entrevista." by="word" immediate stagger={0.06} duration={0.07} />}
         </h1>
+
+        {pendente && !analisando && entrevista.status !== "conectada" && (
+          <button
+            type="button"
+            onClick={() => analisar(pendente)}
+            className="rounded-full border border-[#2B7FA8] px-5 py-2 text-sm text-[#2B7FA8] dark:border-orbe dark:text-orbe">
+            Tentar analisar de novo
+          </button>
+        )}
 
         <Controles
           micLigado={micLigado}
@@ -102,13 +138,13 @@ const Sala = () => {
           onEncerrar={() => {
             const resumo = comportamento.getResumo()
             const conversa = entrevista.getConversa()
-            console.log("[entrevista]", {
+            const dados = {
               comportamento: resumo,
               fala: resumirFala(conversa, resumo?.conversa.segundosFalando.voce ?? 0),
               conversa
-            })
+            }
             entrevista.encerrar()
-            router.push("/mentoria-ia")
+            analisar(dados)
           }}
         />
       </div>
