@@ -826,6 +826,7 @@ export type Database = {
           criado_em: string
           data_nascimento: string | null
           email_contato: string
+          foto_url: string | null
           id: string
           linkedin_url: string | null
           motivacao_desativacao: string | null
@@ -834,6 +835,7 @@ export type Database = {
           telefone: string | null
           tipo: Database["public"]["Enums"]["tipo_perfil"] | null
           uf: string | null
+          username: string
         }
         Insert: {
           bio?: string | null
@@ -842,6 +844,7 @@ export type Database = {
           criado_em?: string
           data_nascimento?: string | null
           email_contato: string
+          foto_url?: string | null
           id: string
           linkedin_url?: string | null
           motivacao_desativacao?: string | null
@@ -850,6 +853,7 @@ export type Database = {
           telefone?: string | null
           tipo?: Database["public"]["Enums"]["tipo_perfil"] | null
           uf?: string | null
+          username?: string
         }
         Update: {
           bio?: string | null
@@ -858,6 +862,7 @@ export type Database = {
           criado_em?: string
           data_nascimento?: string | null
           email_contato?: string
+          foto_url?: string | null
           id?: string
           linkedin_url?: string | null
           motivacao_desativacao?: string | null
@@ -866,6 +871,7 @@ export type Database = {
           telefone?: string | null
           tipo?: Database["public"]["Enums"]["tipo_perfil"] | null
           uf?: string | null
+          username?: string
         }
         Relationships: []
       }
@@ -1100,7 +1106,41 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      cursos_publicos: {
+        Row: {
+          id: number | null
+          idcurso: string | null
+          idperfil: string | null
+          inscrito_em: string | null
+          instituicao_nome: string | null
+          status: Database["public"]["Enums"]["status_inscricao"] | null
+          titulo: string | null
+        }
+        Relationships: []
+      }
+      perfil_publico: {
+        Row: {
+          bio: string | null
+          cidade: string | null
+          criado_em: string | null
+          foto_url: string | null
+          id: string | null
+          linkedin_url: string | null
+          nome_completo: string | null
+          tipo: Database["public"]["Enums"]["tipo_perfil"] | null
+          uf: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
+      preparacao_publica: {
+        Row: {
+          analises: number | null
+          entrevistas: number | null
+          idperfil: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
