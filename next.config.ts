@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "6mb",
     },
   },
+  images: {
+    // Fotos de perfil ficam no bucket público "avatares" do Supabase Storage.
+    remotePatterns: [
+      new URL(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatares/**`),
+    ],
+  },
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
