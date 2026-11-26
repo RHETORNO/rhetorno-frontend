@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { motion, useReducedMotion, useScroll, useTransform, type MotionValue, } from "motion/react";
+import { motion, useInView, useReducedMotion } from "motion/react";
 interface ScrollTextHighlightProps {
     text: string;
     by?: "char" | "word";
@@ -28,31 +28,26 @@ export function ScrollTextHighlight({ text, by = "char", container, className, }
                 .map((w, i, arr) => (i < arr.length - 1 ? w + " " : w));
         return splitGraphemes(text);
     }, [text, by]);
-    const { scrollYProgress } = useScroll({
-        target: targetRef,
-        container,
-        offset: ["start end", "end start"],
-    });
+    const inView = useInView(targetRef, { root: container, once: true, amount: 0.5 });
+    const passo = Math.min(0.03, 1 / units.length);
     if (mounted && reducedMotion) {
         return <p className={className}>{text}</p>;
     }
     return (<p ref={targetRef} className={className}>
       <span className="sr-only">{text}</span>
       <span aria-hidden>
-        {units.map((unit, i) => (<HighlightUnit key={`${unit}-${i}`} index={i} total={units.length} progress={scrollYProgress}>
+        {units.map((unit, i) => (<HighlightUnit key={`${unit}-${i}`} ativo={inView} atraso={i * passo}>
             {unit}
           </HighlightUnit>))}
       </span>
     </p>);
 }
-function HighlightUnit({ index, total, progress, children, }: {
-    index: number;
-    total: number;
-    progress: MotionValue<number>;
+function HighlightUnit({ ativo, atraso, children, }: {
+    ativo: boolean;
+    atraso: number;
     children: React.ReactNode;
 }) {
-    const start = index / total;
-    const end = (index + 1) / total;
-    const opacity = useTransform(progress, [start, end], [0.2, 1]);
-    return <motion.span style={{ opacity }}>{children}</motion.span>;
+    return (<motion.span initial={{ opacity: 0.3 }} animate={{ opacity: ativo ? 1 : 0.3 }} transition={{ duration: 0.3, delay: ativo ? atraso : 0 }}>
+        {children}
+      </motion.span>);
 }
