@@ -8,16 +8,12 @@ import PainelOrb from "./orb"
 import Video from "./video"
 import Controles from "./controles"
 import { SplitText } from "@/components/ui/split-text"
+import useEntrevista from "@/hooks/useEntrevista"
+import Legendas from "./legenda"
+import useComportamento from "@/hooks/useComportamento"
+import { resumirFala } from "@/lib/comportamento"
 
 const estadosTeste: OrbState[] = ['idle', 'listening', 'thinking', 'speaking']
-
-  const perguntas = [
-    "Conte um pouco sobre você e sua trajetória até aqui.",
-    "Me conte sobre um desafio técnico que você resolveu e do que se orgulha.",
-    "Como você lida quando discorda de alguém do time?",
-    "Fale de um erro que você cometeu e o que aprendeu com ele.",
-    "Por que você quer trabalhar com a gente?"
-  ]
 
 const formatarTempo = (s: number) => 
   `${String(Math.floor(s / 60)).padStart(2, "0")} : ${String(s % 60).padStart(2, "0")}`
@@ -26,12 +22,30 @@ const formatarTempo = (s: number) =>
 const Sala = () => {
   const router = useRouter()
   const [orbState, setOrbState] = useState<OrbState>('idle')
-  const [indice, setIndice] = useState(0)
   const [micLigado, setMicLigado] = useState(true)
   const [camLigada, setCamLigada] = useState(true)
   const [segundos, setSegundos] = useState(0)
+  const [analisando, setAnalisando] = useState(false)
+  const [pendente, setPendente] = useState<object | null>(null)
   
-  const { videoRef, resultRef, status, fps, getAudioLevel, setMicrofone, setCamera } = useVisionTracker()
+  const { videoRef, resultRef, status, fps, getAudioLevel, setMicrofone, setCamera } =
+  useVisionTracker()
+
+  const entrevista = useEntrevista()
+  const comportamento = useComportamento(resultRef, {
+    ativo: () => entrevista.status === "conectada",
+    quemFala: entrevista.getQuemFala
+  })
+
+  const estadoOrb: OrbState =
+    entrevista.status === "conectada" ? (entrevista.falando ? "speaking" : "listening")
+      : entrevista.status === "conectando" ? "thinking" 
+        : orbState
+
+  const nivelOrb =
+    estadoOrb === "speaking" ? entrevista.getNivelFala
+      : micLigado ? getAudioLevel
+      : () => 0
 
   useEffect(() => {
     const id = setInterval(() => setSegundos((s) => s + 1), 1000)
@@ -40,7 +54,30 @@ const Sala = () => {
 
   const alternarMic = () => {
     setMicrofone(!micLigado)
+    entrevista.setMicrofone(!micLigado)
     setMicLigado(!micLigado)
+  }
+
+  const analisar = async (dados: object) => {
+    setAnalisando(true)
+    setPendente(null)
+
+    try {
+      const resposta = await fetch("/api/entrevista/analisar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      })
+      if (!resposta.ok) throw new Error(`status ${resposta.status}`)
+
+      const { id } = await resposta.json()
+      router.push(`/mentoria-ia/relatorio/${id}`)
+    }
+    catch (erro) {
+      console.error("[relatorio]", erro)
+      setPendente(dados)
+      setAnalisando(false)
+    }
   }
 
   const alternarCam = () => {
@@ -53,7 +90,6 @@ const Sala = () => {
       <header className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-5">
           <span className="text-[#8CA9D2] dark:text-sala-texto/60">
-            Pergunta {indice + 1} de {perguntas.length}
           </span>
         </div>
         <time
@@ -65,24 +101,51 @@ const Sala = () => {
 
       <section className="grid min-h-0 flex-1 grid-cols-1 items-center gap-6 md:grid-cols-[1.2fr_1fr] md:gap-12">
         <PainelOrb
-          state={orbState}
+          state={estadoOrb}
           visao={resultRef}
-          nivelAudio={micLigado ? getAudioLevel : () => 0}
+          nivelAudio={nivelOrb}
         />
         <Video videoRef={videoRef} visao={resultRef} status={status} fps={fps} camLigada={camLigada} />
       </section>
 
       <div className="flex flex-col items-center gap-6 md:gap-8">
         <h1 className="max-w-3xl text-balance text-center text-xl font-light leading-snug tracking-tight text-[#2B7FA8] dark:text-sala-texto md:text-3xl">
-          <SplitText key={perguntas[indice]} text={perguntas[indice]} by="word" immediate stagger={0.06} duration={0.7} />
+          {analisando
+            ? <SplitText text="Analisando sua entrevista..." by="word" immediate stagger={0.06} duration={0.7} />
+            : entrevista.status === "conectada"
+              ? <Legendas texto={entrevista.fala} progresso={entrevista.getProgresso} />
+            : pendente
+              ? "Não foi possível analisar sua entrevista. Suas respostas continuam aqui."
+              : <SplitText text="Quando estiver pronto, comece a entrevista." by="word" immediate stagger={0.06} duration={0.07} />}
         </h1>
+
+        {pendente && !analisando && entrevista.status !== "conectada" && (
+          <button
+            type="button"
+            onClick={() => analisar(pendente)}
+            className="rounded-full border border-[#2B7FA8] px-5 py-2 text-sm text-[#2B7FA8] dark:border-orbe dark:text-orbe">
+            Tentar analisar de novo
+          </button>
+        )}
 
         <Controles
           micLigado={micLigado}
           camLigada={camLigada}
           onMic={alternarMic}
           onCam={alternarCam}
-          onEncerrar={() => router.push("/mentoria-ia")}
+          entrevista={entrevista.status}
+          onIniciar={entrevista.iniciar}
+          onEncerrar={() => {
+            const resumo = comportamento.getResumo()
+            const conversa = entrevista.getConversa()
+            const dados = {
+              comportamento: resumo,
+              fala: resumirFala(conversa, resumo?.conversa.segundosFalando.voce ?? 0),
+              conversa
+            }
+            entrevista.encerrar()
+            analisar(dados)
+          }}
         />
       </div>
 
@@ -101,7 +164,6 @@ const Sala = () => {
           ))}
           <button
             type="button"
-            onClick={() => setIndice((i) => (i + 1) % perguntas.length)}
             className="rounded-full border border-sala-linha px-3 py-1 text-[#8CA9D2] dark:text-sala-texto/60">
             Próxima pergunta
           </button>

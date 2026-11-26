@@ -43,7 +43,7 @@ const grupos: { titulo: string; links: NavLink[] }[] = [
     links: [
       { name: "Entrevista com IA", href: "/mentoria-ia", icon: Bot },
       { name: "Trilha de Cursos", href: "/cursos", icon: GraduationCap },
-      { name: "Mentores de RH", href: "/mentores-rh", icon: Users },
+      { name: "Mentores de RH", href: "/agendamento-mentor", icon: Users },
       { name: "Agenda", href: "/agenda", icon: Calendar },
     ],
   },
@@ -82,7 +82,8 @@ function BotaoNav({ link: { name, href, icon: Icon }, ativo }: { link: NavLink; 
 // request, então o usePathname fica isolado aqui dentro de um Suspense.
 function ItemNav({ link }: { link: NavLink }) {
   const pathname = usePathname();
-  return <BotaoNav link={link} ativo={pathname.startsWith(link.href)} />;
+  const ativo = pathname === link.href || pathname.startsWith(`${link.href}/`);
+  return <BotaoNav link={link} ativo={ativo} />;
 }
 
 function AppSidebar({ perfil }: { perfil: ReactNode }) {

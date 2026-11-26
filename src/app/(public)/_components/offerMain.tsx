@@ -16,10 +16,10 @@ import { OrbitingCircles } from "@/components/magicui/orbiting-circles"
  
 const Oferecemos = () => {
     return(
-        <section className="py-20 bg-background" id="candidatos">
-            <h1 className="text-4xl pl-32 pb-16"> O que oferecemos? </h1>
-            <div className="grid grid-cols-2 px-20">
-                <div className="h-[575px] overflow-y-auto rounded-xl border p-6 py-8 shadow-lg border-foreground/40">
+        <section className="scroll-mt-20 py-16 md:py-20 bg-background" id="candidatos">
+            <h1 className="revelar px-6 pb-10 text-3xl sm:text-4xl md:px-20 md:pb-16 lg:pl-32"> O que oferecemos? </h1>
+            <div className="grid grid-cols-1 gap-12 px-6 md:px-20 lg:grid-cols-2 lg:gap-0">
+                <div className="revelar order-2 rounded-xl border p-5 py-7 shadow-lg border-foreground/40 sm:p-6 sm:py-8 lg:order-none lg:h-[575px] lg:overflow-y-auto">
                     <ScrollTimeline activationLine={0.70}>
                         {lancar.map((l) => (
                         <ScrollTimelineItem key={l.nome} title={l.nome}>
@@ -28,12 +28,14 @@ const Oferecemos = () => {
                         ))}
                     </ScrollTimeline>
                 </div>
-                <div className="pl-18">
-                    <h3 className="text-2xl text-foreground/70 pb-2">
+                <div className="revelar order-1 lg:order-none lg:pl-18">
+                    <h3 className="text-lg text-foreground/70 pb-2 sm:text-xl lg:text-2xl">
                         Tudo para evoluir na carreira. Valorize seu perfil, desenvolva suas competências e prepare-se para a próxima oportunidade. <br/>
                         Cada etapa responde a uma dúvida comum, para você não enfrentar essa jornada sozinho. 
                     </h3>
-                    <div className="relative flex h-[500px] w-full items-center justify-center overflow-hidden">
+                    <div className="relative flex h-[300px] w-full items-center justify-center overflow-hidden sm:h-[420px] lg:h-[500px]">
+                        {/* no celular as órbitas ficam menores pra caber na tela */}
+                        <div className="relative flex size-[400px] shrink-0 scale-[0.68] items-center justify-center sm:scale-90 lg:scale-100">
                         <OrbitingCircles>
                             <File/>
                             <Image
@@ -49,6 +51,7 @@ const Oferecemos = () => {
                             <File/>
                             <Bot/>
                         </OrbitingCircles>
+                        </div>
                     </div>
                 </div>
             </div>

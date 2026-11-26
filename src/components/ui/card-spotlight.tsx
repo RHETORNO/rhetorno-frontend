@@ -32,6 +32,22 @@ export const CardSpotlight = ({
   const [isHovering, setIsHovering] = useState(false);
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
+
+  // no celular o brilho acende onde o dedo toca e apaga um pouco depois de soltar
+  const apagarRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleTouch = (e: React.TouchEvent<HTMLDivElement>) => {
+    const toque = e.touches[0];
+    if (!toque) return;
+    const { left, top } = e.currentTarget.getBoundingClientRect();
+    mouseX.set(toque.clientX - left);
+    mouseY.set(toque.clientY - top);
+    if (apagarRef.current) clearTimeout(apagarRef.current);
+    setIsHovering(true);
+  };
+  const handleTouchEnd = () => {
+    if (apagarRef.current) clearTimeout(apagarRef.current);
+    apagarRef.current = setTimeout(() => setIsHovering(false), 1500);
+  };
   return (
     <div
       className={cn(
@@ -41,10 +57,14 @@ export const CardSpotlight = ({
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouch}
+      onTouchMove={handleTouch}
+      onTouchEnd={handleTouchEnd}
+      data-ativo={isHovering}
       {...props}
     >
       <motion.div
-        className="pointer-events-none absolute z-0 -inset-px rounded-md opacity-0 transition duration-300 group-hover/spotlight:opacity-100"
+        className="pointer-events-none absolute z-0 -inset-px rounded-md opacity-0 transition duration-300 group-hover/spotlight:opacity-100 group-data-[ativo=true]/spotlight:opacity-100"
         style={{
           backgroundColor: color,
           maskImage: useMotionTemplate`

@@ -7,10 +7,13 @@ import
   Video, 
   VideoOff
 } from "lucide-react"
+import type { StatusEntrevista } from "@/hooks/useEntrevista"
 
 type Props = {
   micLigado: boolean
   camLigada: boolean
+  entrevista: StatusEntrevista
+  onIniciar: () => void
   onMic: () => void
   onCam: () => void
   onEncerrar: () => void
@@ -22,8 +25,16 @@ const ligado =
   'border-sala-linha bg-sala-superficie text-sala-texto hover:border-orbe/60'
 const desligado =
   'border-sala-texto bg-sala-texto text-sala-noite'
+const botaoLigacao =
+  "ml-3 h-12 rounded-full bg-sala-texto px-6 text-sm font-medium text-sala-noite transition-colors hover:bg-black/25 dark:hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orbe disabled:opacity-60"
+const rotuloBotao: Record<StatusEntrevista, string> = {
+  parada: "Começar entrevista",
+  conectando: "Conectando...",
+  conectada: "Encerrar entrevista",
+  erro: "Tentar de novo"
+}
 
-const Controles = ({ micLigado, camLigada, onMic, onCam, onEncerrar }: Props) => {
+const Controles = ({ micLigado, camLigada, onMic, onCam, onEncerrar, entrevista, onIniciar }: Props) => {
   return (
     <footer className="flex items-center justify-center gap-3">
       <button
@@ -45,10 +56,11 @@ const Controles = ({ micLigado, camLigada, onMic, onCam, onEncerrar }: Props) =>
       
       <button
         type="button"
-        onClick={onEncerrar}
-        className="ml-3 h-12 rounded-full bg-sala-texto px-6 text-sm font-medium text-sala-noite transition-colors hover:bg-black/25 dark:hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orbe"
+        onClick={entrevista === "conectada" ? onEncerrar : onIniciar}
+        disabled={entrevista === "conectando"}
+        className={botaoLigacao}
       >
-        Encerrar entrevista
+        {rotuloBotao[entrevista]}
       </button>
       
     </footer>

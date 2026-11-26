@@ -1001,6 +1001,14 @@ const GlowCursor = ({
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     window.addEventListener('pointerdown', onPointerDown, { passive: true });
     document.documentElement.addEventListener('pointerleave', onPointerLeave);
+    // no celular o navegador cancela o pointermove quando a página rola,
+    // então o rastro segue o dedo pelos eventos de toque
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (touch) onPointerMove({ clientX: touch.clientX, clientY: touch.clientY } as PointerEvent);
+    };
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onPointerLeave, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
     resize();
     blank();
@@ -1012,6 +1020,8 @@ const GlowCursor = ({
       intersection.disconnect();
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onPointerLeave);
       document.documentElement.removeEventListener('pointerleave', onPointerLeave);
       document.removeEventListener('visibilitychange', onVisibility);
       release();

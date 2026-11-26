@@ -35,6 +35,7 @@ const useVisionTracker = () => {
         let rafId = 0
         let stream: MediaStream | null = null
         let audioCtx: AudioContext | null = null
+        let acordar: (() => void) | null = null
 
         let busy = false
         let lastSent = 0
@@ -110,7 +111,10 @@ const useVisionTracker = () => {
                     audioCtx = ctx
                     ctx.resume()
                     if (ctx.state === "suspended") {
-                        window.addEventListener("pointerdown", () => ctx.resume(), { once: true })
+                        acordar = () => {
+                            if (ctx.state === "suspended") ctx.resume()
+                        }
+                        window.addEventListener("pointerdown", acordar, { once: true })
                     }
                 }
 
@@ -170,6 +174,7 @@ const useVisionTracker = () => {
         cancelAnimationFrame(rafId)
         stream?.getTracks().forEach((t) => t.stop())
         audioCtx?.close()
+        if (acordar) window.removeEventListener("pointerdown", acordar)
       audioRef.current = null
       streamRef.current = null
         worker.terminate() // mata o worker e libera a porra toda junta

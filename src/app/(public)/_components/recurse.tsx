@@ -4,7 +4,6 @@ import { Marquee } from "@/components/ui/marquee"
 import { CardSpotlight } from "@/components/ui/card-spotlight"
 import { Check } from "lucide-react"
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card"
-import Botao from "@/components/layout/button";
 
 const fundacoes = [
     { nome: 'Fundação Bradesco', img:  '/documents/Bradesco.jpg'},
@@ -24,11 +23,11 @@ const corpoCard =
 
 const Recursos = () => {    
     return(
-        <section className="py-6 px-14">
-            <div className="">
-            <h2 className="text-4xl"> O que você encontra para se preparar. </h2>
+        <section className="py-6 px-6 md:px-14">
+            <div className="revelar">
+            <h2 className="text-3xl sm:text-4xl"> O que você encontra para se preparar. </h2>
             </div>
-            <div className="py-8 grid items-stretch gap-8 grid-cols-1 lg:grid-cols-[1fr_auto]">
+            <div className="py-8 grid items-stretch gap-8 grid-cols-1 lg:grid-cols-[3fr_2fr] xl:grid-cols-[1fr_auto]">
                 <video 
                 src="/video/video1.mp4"
                 autoPlay
@@ -36,16 +35,22 @@ const Recursos = () => {
                 width={1000}
                 height={250}
                 loop 
-                className="h-150 w-320 rounded-3xl object-cover"/>
-                <div className="flex flex-col gap-6">
+                playsInline
+                className="revelar h-80 w-full rounded-3xl object-cover sm:h-120 lg:h-150 lg:w-320"/>
+                <div className="revelar flex flex-col gap-6">
                     <h3 className="text-2xl font-medium"> Entrevistas simuladas por video com IA </h3>
-                    <p className="text-sm text-foreground/70"> Você responde como em uma entrevista real. <br/>
-                        A IA observa expressões faciais, movimentos rápidos, <br/>
+                    <p className="text-base text-foreground/70 sm:text-sm"> Você responde como em uma entrevista real. <br className="hidden sm:block"/>
+                        A IA observa expressões faciais, movimentos rápidos, <br className="hidden sm:block"/>
                          inclinações e giros da cabeça e aponta padrões de comportamento que vale ajustar. </p>
-                    <Botao conteudo="Incluido no plano premium" className=""/>
+                    <a
+                        href="#plano-premium"
+                        className="w-fit rounded-2xl bg-background px-5 py-1.5 border border-foreground/70 font-medium text-[16px] transition hover:bg-background/65"
+                    >
+                        Incluído no plano Premium
+                    </a>
                 </div>
             </div>
-            <div className="grid grid-cols-1 py-6 items-stretch gap-8 lg:grid-cols-2">
+            <div className="revelar grid grid-cols-1 py-6 items-stretch gap-8 lg:grid-cols-2">
             <CardContainer containerClassName="py-0 items-stretch" className="h-full w-full items-stretch">
                 <CardBody className={corpoCard}>
                     <CardItem translateZ="50" as="h3" className="text-2xl font-medium">
@@ -57,7 +62,7 @@ const Recursos = () => {
                         alt="Imagem"
                         height={1000}
                         width={1000}
-                        className="h-80 w-full object-cover rounded-xl group-hover/card:shadow-xl"
+                        className="h-56 w-full object-cover rounded-xl group-hover/card:shadow-xl sm:h-80"
                         />
                     </CardItem>
                     <CardItem translateZ={60} as="p" className="mt-4 text-base text-foreground/70">
@@ -70,7 +75,7 @@ const Recursos = () => {
                 <CardSpotlight className="flex w-full flex-col hover:cursor-pointer">
                     <h3 className="text-xl font-medium relative z-20 mt-2 text-white"> Cursos gratuitos com certificados </h3>
                     <p className="max-w-md text-neutral-200 mt-4 relative z-20"> 
-                        Trilhas montadas a partir do seu perfil, das <br/>
+                        Trilhas montadas a partir do seu perfil, das <br className="hidden sm:block"/>
                         suas necessidades e da sua faixa etária.
                     </p>
                     <ul className="relative z-20 space-y-3 text-sm text-neutral-300 my-auto">
@@ -98,7 +103,7 @@ const Recursos = () => {
             fadeEdges={true}
             pauseOnTap={true}
             speedOnHover={15}
-            className="h-40 py-6"
+            className="h-32 py-6 sm:h-40"
             >
                     {fundacoes.map((logo) => (
                         <Image
@@ -107,7 +112,7 @@ const Recursos = () => {
                         key={logo.nome}
                         width={160}
                         height={64}
-                        className="mx-8 h-16 w-40 object-contain opacity-60 grayscale
+                        className="mx-5 h-12 w-32 object-contain sm:mx-8 sm:h-16 sm:w-40 opacity-60 grayscale
                                     transition duration-300 hover:opacity-100 hover:grayscale-0"
                         />
                     ))}
